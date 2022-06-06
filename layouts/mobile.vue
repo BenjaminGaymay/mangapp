@@ -4,7 +4,7 @@
 
 		<div v-if="status" class="notification">Téléchargement {{ status }}</div>
 
-		<main class="flex-grow w-full pb-2 z-10 overflow-auto">
+		<main class="flex-grow w-full pb-2 z-10 overflow-auto max-w-xl mx-auto">
 			<slot />
 		</main>
 
