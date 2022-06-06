@@ -1,0 +1,9 @@
+**/.nuxt/
+**/.output/
+**/node_modules/
+**/.editorconfig
+**/.gitignore
+**/.prettierrc
+**/README.md
+**/upload.sh
+**/TODO

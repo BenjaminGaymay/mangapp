@@ -1,0 +1,9 @@
+node_modules
+*.log*
+.nuxt
+.output
+.nitro
+.cache
+.output
+.env
+upload.sh

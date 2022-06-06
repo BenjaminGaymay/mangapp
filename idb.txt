@@ -1,0 +1,4 @@
+[history]:${slug}-${chapter}	->	{ read: boolean, page: number}
+[favorite]:${slug}				->	string
+[chapter]:${slug}-${chapter}	->	{ pages: string[], infos }
+[page]:${uri}					->	dataImg

@@ -1,0 +1,18 @@
+:root {
+	--primary: #141414;
+	--secondary: #181818;
+	--accent: #e94560;
+}
+
+html,
+body {
+	max-width: 100vw;
+	max-height: 100vh;
+
+	overflow-x: hidden;
+	overscroll-behavior-y: contain;
+}
+
+img::selection {
+	background: transparent;
+}
