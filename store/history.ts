@@ -4,7 +4,6 @@ import { entries, set } from 'idb-keyval';
 export const useHistory = defineStore('history-store', {
 	state: () => ({
 		list: {},
-		loading: false as boolean,
 		refreshing: false as boolean
 	}),
 
@@ -12,6 +11,10 @@ export const useHistory = defineStore('history-store', {
 		async set(key: string, value: DBHistory): Promise<void> {
 			this.list[key] = value;
 			return set(`[history]:${key}`, value);
+		},
+
+		get(key: string): DBHistory {
+			return this.list[`[history]:${key}`];
 		},
 
 		async refresh(cache?: [string, any][]): Promise<void> {

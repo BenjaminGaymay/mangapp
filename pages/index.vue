@@ -41,13 +41,19 @@
 <script setup lang="ts">
 const day = 0;
 
-const { data: tData } = await useFetch<HomeManga[]>(`/api/home/day/${day}`);
-const today: HomeManga[] = tData.value;
+const { data: tData, pending: tPending } = useLazyFetch<HomeManga[]>(`/api/home/day/${day}`);
+const todayHots = ref((tData && tData.value ? tData.value.filter(m => m.isHot) : []) as HomeManga[]);
 
-const todayHots = computed(() => today.filter(m => m.isHot));
+watch(tData, (value: HomeManga[]) => {
+	todayHots.value = value.filter(m => m.isHot);
+});
 
-const { data: wData } = await useFetch<Trends[]>('/api/home/trends');
-const trends: Trends[] = wData.value;
+const { data: wData, pending: wPending } = useLazyFetch<Trends[]>('/api/home/trends');
+const trends = ref(wData.value as Trends[]);
+
+watch(wData, (value: Trends[]) => {
+	trends.value = value;
+});
 </script>
 
 <style lang="scss" scoped>

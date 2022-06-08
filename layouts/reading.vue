@@ -6,6 +6,11 @@
 	</div>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useIdb } from '~~/store/idb';
+
+const { refreshAll } = useIdb();
+onMounted(refreshAll);
+</script>
 
 <style lang="scss" scoped></style>

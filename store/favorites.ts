@@ -15,7 +15,7 @@ export const useFavorites = defineStore('favorites-store', {
 			this.favorites = [];
 		},
 
-		find(key: string): void {
+		find(key: string): boolean {
 			return this.list.find(({ slug }) => slug === key);
 		},
 

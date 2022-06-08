@@ -1,10 +1,11 @@
 <template>
 	<NuxtLayout name="mobile">
 		<Head>
-			<Title>{{ title }} </Title>
+			<Title v-if="pending || !Boolean(manga)">Chargement</Title>
+			<Title v-else>{{ manga.title }} </Title>
 		</Head>
 
-		<Page :no-padding="true">
+		<Page :no-padding="true" :pending="pending || !Boolean(manga)">
 			<template v-if="!download">
 				<div class="px-4 py-2 flex flex-nowrap justify-between items-center">
 					<div class="w-4">
@@ -14,7 +15,7 @@
 					</div>
 
 					<div class="flex flex-nowrap gap-x-3 items-center">
-						<div class="w-5 cursor-pointer" @click="toggle(slug, title)">
+						<div v-if="manga.title" class="w-5 cursor-pointer" @click="toggle(slug, manga.title)">
 							<img v-if="find(slug)" src="~/assets/svg/heart/plain.svg" />
 							<img v-else src="~/assets/svg/heart/line.svg" />
 						</div>
@@ -26,20 +27,24 @@
 					</div>
 				</div>
 
-				<MangaTitle class="top-0 pt-4 pb-2 mb-4 sticky shadow-2xl z-20 px-4" style="background-color: #090112">
-					{{ title }}
+				<MangaTitle
+					v-if="manga.title"
+					class="top-0 pt-4 pb-2 mb-4 sticky shadow-2xl z-20 px-4"
+					style="background-color: #090112"
+				>
+					{{ manga.title }}
 				</MangaTitle>
 
-				<MangaInfos :infos="infos" class="mx-4" />
+				<MangaInfos v-if="manga" :infos="manga" class="mx-4" />
 			</template>
 
 			<div class="grid grid-cols-1 gap-y-1.5 mx-2 mt-6">
-				<template v-if="!download">
-					<MangaChapter v-for="chapter in chapters" :chapter="chapter" :slug="slug" />
+				<template v-if="!download && manga.chapters">
+					<MangaChapter v-for="chapter in manga.chapters" :chapter="chapter" :slug="slug" />
 				</template>
 
-				<template v-else>
-					<MangaDownloadChapter v-for="chapter in chapters" :chapter="chapter" :slug="slug" />
+				<template v-else-if="manga.chapters">
+					<MangaDownloadChapter v-for="chapter in manga.chapters" :chapter="chapter" :slug="slug" />
 				</template>
 			</div>
 		</Page>
@@ -62,12 +67,15 @@ const { find, toggle } = useFavorites();
 
 dlClear();
 const route = useRoute();
-const { data } = await useFetch<Manga>(`/api/manga/${route.params.slug}`);
-const { title, chapters, ...infos } = data.value;
+const { data, pending } = useLazyFetch<Manga>(`/api/manga/${route.params.slug}`);
+const manga = ref(data.value as Manga);
 
-if (!title) throwError(new Error("Cette page n'existe pas"));
+watch(data, (value: Manga) => {
+	manga.value = value;
+	if (!value.title) throwError(new Error("Cette page n'existe pas"));
+});
 
-const slug: string | string[] = route.params.slug;
+const slug: string = route.params.slug as string;
 
 const download = ref(false);
 function toggleDl() {

@@ -6,12 +6,16 @@ import { useHistory } from './history';
 
 export const useIdb = defineStore('idb-store', {
 	state: () => ({
+		called: 0 as number,
+		loaded: false as boolean,
 		loading: false as boolean
 	}),
 
 	actions: {
 		async refreshAll(): Promise<void> {
-			if (this.loading) return;
+			this.called += 1;
+
+			if (this.loading || this.loaded) return;
 			this.loading = true;
 
 			const { refresh: rDownloads } = useDownloads();
@@ -23,7 +27,9 @@ export const useIdb = defineStore('idb-store', {
 			rDownloads(cache);
 			rFavorites(cache);
 			rHistory(cache);
+
 			this.loading = false;
+			this.loaded = true;
 		}
 	}
 });

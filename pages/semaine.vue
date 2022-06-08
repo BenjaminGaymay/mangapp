@@ -17,8 +17,10 @@
 </template>
 
 <script setup lang="ts">
-const { data } = await useFetch<HomeManga[]>(`/api/home/week`);
-const week: HomeManga[] = data.value;
+const { data, pending } = useLazyFetch<HomeManga[]>(`/api/home/week`);
+const weekHots = ref((data.value && data.value ? data.value.filter(m => m.isHot) : []) as HomeManga[]);
 
-const weekHots = computed(() => week.filter(m => m.isHot));
+watch(data, (value: HomeManga[]) => {
+	weekHots.value = value.filter(m => m.isHot);
+});
 </script>

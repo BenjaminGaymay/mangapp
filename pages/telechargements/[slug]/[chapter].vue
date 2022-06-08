@@ -1,7 +1,8 @@
 <template>
 	<NuxtLayout name="reading">
 		<Head>
-			<Title>{{ infos.manga }} ~ {{ infos.isVolume ? 'Volume' : 'Chapitre' }} {{ infos.number }}</Title>
+			<Title v-if="loading"> Chargement</Title>
+			<Title v-else>{{ infos.manga }} ~ {{ infos.isVolume ? 'Volume' : 'Chapitre' }} {{ infos.number }}</Title>
 		</Head>
 
 		<div
@@ -10,31 +11,34 @@
 			@scroll="handleScroll"
 			class="relative overflow-auto h-screen"
 		>
-			<transition name="slide">
-				<nav v-if="navigation" @click.stop class="top-0">
-					<div class="w-4">
-						<NuxtLink to="/telechargements">
-							<img src="~/assets/svg/arrow/line.svg" />
-						</NuxtLink>
-					</div>
-					<div class="text-center">
-						<div class="font-semibold text-lg leading-4 pt-1.5">{{ infos.manga }}</div>
-						<div>{{ infos.isVolume ? 'Volume' : 'Chapitre' }} {{ infos.number }}</div>
-					</div>
+			<div v-if="loading">Chargement</div>
+			<template v-else>
+				<transition name="slide">
+					<nav v-if="navigation" @click.stop class="top-0">
+						<div class="w-4">
+							<NuxtLink to="/telechargements">
+								<img src="~/assets/svg/arrow/line.svg" />
+							</NuxtLink>
+						</div>
+						<div class="text-center">
+							<div class="font-semibold text-lg leading-4 pt-1.5">{{ infos.manga }}</div>
+							<div>{{ infos.isVolume ? 'Volume' : 'Chapitre' }} {{ infos.number }}</div>
+						</div>
 
-					<div class="w-4"></div>
-				</nav>
-			</transition>
+						<div class="w-4"></div>
+					</nav>
+				</transition>
 
-			<transition name="slide-reverse">
-				<nav v-if="navigation" @click.stop class="bottom-0">
-					<div class="text-center w-full">{{ current }}/{{ pages.length }}</div>
-				</nav>
-			</transition>
+				<transition name="slide-reverse">
+					<nav v-if="navigation" @click.stop class="bottom-0">
+						<div class="text-center w-full">{{ current }}/{{ pages.length }}</div>
+					</nav>
+				</transition>
 
-			<div v-for="(page, i) in pages">
-				<img v-if="visible >= i" :src="page" :data-index="i + 1" class="mx-auto" />
-			</div>
+				<div v-for="(page, i) in pages">
+					<img v-if="visible >= i" :src="page" :data-index="i + 1" class="mx-auto" />
+				</div>
+			</template>
 		</div>
 	</NuxtLayout>
 </template>
@@ -43,7 +47,9 @@
 import { getMany, get } from 'idb-keyval';
 import { useDownloads } from '~~/store/downloads';
 import { useHistory } from '~~/store/history';
+import { useIdb } from '~~/store/idb';
 
+const idb = useIdb();
 const store = useHistory();
 const { get: getFromStore } = useDownloads();
 
@@ -51,26 +57,24 @@ const route = useRoute();
 
 const pages = ref([] as DBPage[]);
 const infos = ref({} as ChapterPagesInfos);
+const loading = ref(false);
 
 const key: string = `${route.params.slug}-${route.params.chapter}`;
 
+watch(idb, value => {
+	if (!value.loading) scrollToSavedPage();
+});
+
 onMounted(async () => {
+	loading.value = true;
 	const { pages: p, infos: i } = getFromStore(key) || (await get<DBChapter>(`[chapter]:${key}`));
 
 	pages.value = await getMany<DBPage>(p.map((uri: string): string => `[page]:${uri}`));
+	loading.value = false;
+
 	infos.value = i;
 
-	const { page } = store.list[key] || {};
-	if (!page) return;
-
-	visible.value = page + 1;
-	const scrollToInterval = setInterval(() => {
-		const div = document.querySelector(`img[data-index="${page}"]`);
-		if (!div) return;
-
-		clearInterval(scrollToInterval);
-		div.scrollIntoView({ behavior: 'smooth', block: 'start' });
-	}, 100);
+	scrollToSavedPage();
 });
 
 const navigation = ref(true);
@@ -96,6 +100,21 @@ function handleScroll() {
 	if (screen.value.scrollTop + screen.value.clientHeight >= screen.value.scrollHeight - window.innerHeight / 2) {
 		visible.value += visible.value >= pages.value.length ? 0 : 1;
 	}
+}
+
+function scrollToSavedPage() {
+	const { page } = store.get(key) || {};
+	if (!page) return;
+
+	visible.value = page + 1;
+
+	const scrollToInterval = setInterval(() => {
+		const div = document.querySelector(`img[data-index="${page}"]`);
+		if (!div) return;
+
+		clearInterval(scrollToInterval);
+		div.scrollIntoView({ behavior: 'smooth', block: 'start' });
+	}, 100);
 }
 </script>
 
