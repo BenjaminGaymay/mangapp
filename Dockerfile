@@ -16,7 +16,7 @@ FROM node:16-alpine as build
 WORKDIR /mangas
 
 COPY --chown=node:node --from=version /mangas/package.json /mangas/package-lock.json ./
-RUN npm ci --only=production
+RUN npm i
 RUN npm cache clean --force
 
 COPY --chown=node:node . .

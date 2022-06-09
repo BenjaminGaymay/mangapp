@@ -22,13 +22,15 @@ async function getChapterPages(slug: string, chapter: string): Promise<ChapterPa
 	});
 
 	const [, name]: string[] = page.match(rName) || [];
+	console.log(name);
+
 	const [, manga]: string[] = page.match(rManga(slug)) || [];
 
 	const [, next]: string[] = page.match(rNext) || [];
 	const [, previous]: string[] = page.match(rPrevious) || [];
 
 	const infos = {
-		name,
+		name: name?.split('Attention :')[0],
 		manga,
 		number: parseFloat(chapter.replace('volume-', '')),
 		isVolume: chapter.includes('volume') || undefined,

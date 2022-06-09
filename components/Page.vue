@@ -3,13 +3,8 @@
 		<slot name="header" />
 
 		<div :class="{ 'px-4 pt-4': !noPadding }">
-			<template v-if="!pending">
-				<slot />
-			</template>
-
-			<template v-else>
-				<div class="flex items-center justify-center h-screen w-screen absolute inset-0">CHARGEMENT</div>
-			</template>
+			<slot v-if="!pending" />
+			<UiLoader v-else />
 		</div>
 
 		<slot name="footer" />

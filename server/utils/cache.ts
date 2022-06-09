@@ -105,7 +105,7 @@ function parseDailyManga(mangaList: RegExpMatchArray[]): HomeManga[] {
 }
 
 function parseMangaChapters(manga: string): Chapter[] {
-	return [...manga.matchAll(rChapters)].map(([, href, cName, , infos]) => {
+	return [...manga.matchAll(rChapters)].map(([, href, cName, , , infos]) => {
 		const [, name]: string[] = cName.match(rChapterName) || [];
 		const [, number]: string[] = href.match(rChapterNumber) || [];
 		const isVolume: boolean = number.includes('volume') || undefined;

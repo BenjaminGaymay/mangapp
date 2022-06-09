@@ -5,7 +5,7 @@
 		</Head>
 
 		<Page>
-			<div class="flex items-center justify-between flex-nowrap">
+			<div class="flex items-center justify-between flex-nowrap mb-6">
 				<PageTitle>Sorties du jour</PageTitle>
 
 				<div class="w-4 transform rotate-180">
@@ -15,16 +15,22 @@
 				</div>
 			</div>
 
-			<HomeCarousel class="mt-6">
-				<NuxtLink v-for="{ name, slug } in todayHots" :to="`/manga/${slug}`" append>
-					<HomeHotManga :slug="slug" :name="name" :fixed="true" />
+			<div v-if="!tLoaded || !Boolean(todayHots)" class="relative h-48 mb-3 overflow-y-visible"><UiLoader /></div>
+			<HomeCarousel v-show="tLoaded && Boolean(todayHots)" @loaded="tLoaded = true" class="pb-3">
+				<NuxtLink v-for="{ name, slug, chapters } in todayHots" :to="`/manga/${slug}`">
+					<HomeHotManga :slug="slug" :name="name" :fixed="true" :info="chapters[0].infos" />
 				</NuxtLink>
 			</HomeCarousel>
 
-			<PageTitle class="pt-6">Tendances de la semaine</PageTitle>
+			<PageTitle class="pt-3 mb-8">Tendances de la semaine</PageTitle>
 
-			<div class="mt-8 grid grid-cols-6 gap-7 items-center">
-				<div v-for="({ name, slug }, i) in trends" class="relative col-span-2" :class="{ 'col-span-3': i < 2 }">
+			<div v-if="!Boolean(trends)" class="relative h-48"><UiLoader /></div>
+			<div v-show="Boolean(trends)" class="grid grid-cols-6 gap-x-2 gap-y-3 items-center">
+				<div
+					v-for="({ name, slug }, i) in trends"
+					class="relative col-span-2"
+					:class="{ 'col-span-3 mx-1': i < 2 }"
+				>
 					<NuxtLink :to="`/manga/${slug}`" append>
 						<HomeHotManga class="mx-auto" :slug="slug" :name="name" />
 
@@ -40,19 +46,24 @@
 
 <script setup lang="ts">
 const day = 0;
+const tLoaded = ref(false);
 
-const { data: tData, pending: tPending } = useLazyFetch<HomeManga[]>(`/api/home/day/${day}`);
+const { data: tData } = useLazyFetch<HomeManga[]>(`/api/home/day/${day}`);
 const todayHots = ref((tData && tData.value ? tData.value.filter(m => m.isHot) : []) as HomeManga[]);
 
 watch(tData, (value: HomeManga[]) => {
 	todayHots.value = value.filter(m => m.isHot);
 });
 
-const { data: wData, pending: wPending } = useLazyFetch<Trends[]>('/api/home/trends');
+const { data: wData } = useLazyFetch<Trends[]>('/api/home/trends');
 const trends = ref(wData.value as Trends[]);
 
 watch(wData, (value: Trends[]) => {
 	trends.value = value;
+});
+
+onMounted(() => {
+	refreshNuxtData();
 });
 </script>
 

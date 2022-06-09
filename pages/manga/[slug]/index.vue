@@ -1,7 +1,7 @@
 <template>
 	<NuxtLayout name="mobile">
 		<Head>
-			<Title v-if="pending || !Boolean(manga)">Chargement</Title>
+			<Title v-if="pending || !Boolean(manga)">Mangapp</Title>
 			<Title v-else>{{ manga.title }} </Title>
 		</Head>
 
@@ -19,11 +19,15 @@
 							<img v-if="find(slug)" src="~/assets/svg/heart/plain.svg" />
 							<img v-else src="~/assets/svg/heart/line.svg" />
 						</div>
-						<div class="w-5 cursor-pointer" @click="toggleDl">
+
+						<div class="w-5 cursor-not-allowed" v-if="dl.loading">
+							<img src="~/assets/svg/download/plain.svg" />
+						</div>
+						<div v-else class="w-5 cursor-pointer" @click="toggleDl">
 							<img v-if="download" src="~/assets/svg/download/plain.svg" />
 							<img v-else src="~/assets/svg/download/line.svg" />
 						</div>
-						<div>share</div>
+						<!-- <div>share</div> -->
 					</div>
 				</div>
 
@@ -51,7 +55,7 @@
 
 		<template v-if="download" #nav>
 			<div class="flex items-center justify-between gap-x-8 px-8 h-full">
-				<div class="dl-button" @click="execDl() && toggleDl()">Télécharger</div>
+				<div class="dl-button" @click="dl.execDl() && toggleDl()">Télécharger</div>
 				<div class="dl-button" @click="toggleDl">Annuler</div>
 			</div>
 		</template>
@@ -62,10 +66,10 @@
 import { useDownloads } from '~/store/downloads';
 import { useFavorites } from '~~/store/favorites';
 
-const { dlClear, execDl } = useDownloads();
+const dl = useDownloads();
 const { find, toggle } = useFavorites();
 
-dlClear();
+dl.dlClear();
 const route = useRoute();
 const { data, pending } = useLazyFetch<Manga>(`/api/manga/${route.params.slug}`);
 const manga = ref(data.value as Manga);
@@ -79,7 +83,7 @@ const slug: string = route.params.slug as string;
 
 const download = ref(false);
 function toggleDl() {
-	dlClear();
+	dl.dlClear();
 	download.value = !download.value;
 }
 </script>

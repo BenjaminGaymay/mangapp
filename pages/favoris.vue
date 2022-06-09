@@ -5,12 +5,10 @@
 		</Head>
 
 		<Page :pending="fav.refreshing || idb.loading">
-			<div class="grid grid-cols-6 gap-7 items-center">
-				<div
-					v-for="({ name, slug }, i) in fav.list"
-					class="relative col-span-2"
-					:class="{ 'col-span-3': i < 2 }"
-				>
+			<PageTitle class="mb-8">Mes favoris</PageTitle>
+
+			<div class="grid grid-cols-3 gap-x-3 gap-y-3 items-center">
+				<div v-for="({ name, slug }, i) in fav.list" class="relative">
 					<NuxtLink :to="`/manga/${slug}`" append>
 						<HomeHotManga class="mx-auto" :slug="slug" :name="name" />
 					</NuxtLink>

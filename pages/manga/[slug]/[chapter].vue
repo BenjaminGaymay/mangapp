@@ -1,7 +1,7 @@
 <template>
 	<NuxtLayout name="reading">
 		<Head>
-			<Title v-if="pending || !Boolean(chapter)"> Chargement</Title>
+			<Title v-if="pending || !Boolean(chapter)">Mangapp</Title>
 			<Title v-else>
 				{{ chapter.manga }} ~ {{ chapter.isVolume ? 'Volume' : 'Chapitre' }} {{ chapter.number }}
 			</Title>
@@ -13,7 +13,7 @@
 			@scroll="handleScroll"
 			class="relative overflow-auto h-screen"
 		>
-			<div v-if="pending || !Boolean(chapter)">Chargement</div>
+			<UiLoader v-if="pending || !Boolean(chapter)" />
 			<template v-else>
 				<transition name="slide">
 					<nav v-if="navigation" @click.stop class="top-0">

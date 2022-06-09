@@ -1,7 +1,7 @@
 :root {
-	--primary: #141414;
+	/* --primary: #141414;
 	--secondary: #181818;
-	--accent: #e94560;
+	--accent: #e94560; */
 }
 
 html,
@@ -11,8 +11,44 @@ body {
 
 	overflow-x: hidden;
 	overscroll-behavior-y: contain;
+
+	scrollbar-color: #39c2d4 transparent;
+	scrollbar-width: auto;
+
+	-webkit-tap-highlight-color: transparent;
 }
 
 img::selection {
 	background: transparent;
+}
+
+::-webkit-scrollbar {
+	width: 0.4rem;
+	height: 0.4rem;
+}
+
+::-webkit-scrollbar-track {
+	background: transparent;
+	margin: 0.4rem 0.4rem;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #39c2d4;
+	border-radius: 100vw;
+}
+
+::-webkit-scrollbar-corner,
+::-webkit-scrollbar-button {
+	display: none;
+}
+
+@media (max-width: 576px) and (display-mode: standalone) {
+	html,
+	body {
+		scrollbar-color: transparent transparent;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: transparent;
+	}
 }

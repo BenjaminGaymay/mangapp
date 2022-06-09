@@ -4,8 +4,10 @@
 			<div class="flex items-center justify-between">
 				<div>{{ chapter.isVolume ? 'Volume' : 'Chapitre' }} {{ chapter.number }}</div>
 
-				<div v-if="chapter.infos" class="text-sm">{{ chapter.infos }}</div>
-				<div v-else-if="isToday" class="whitespace-nowrap badge text-xs font-semibold">Nouveau !</div>
+				<div v-if="chapter.infos" class="text-sm bg-blue-400 badge">{{ chapter.infos }}</div>
+				<div v-else-if="isToday" class="whitespace-nowrap badge bg-red-400 text-xs font-semibold">
+					Nouveau !
+				</div>
 			</div>
 
 			<div class="flex items-center justify-between text-xs gap-x-3">
@@ -62,7 +64,7 @@ const isToday = computed((): boolean => today === date.value || yesterday === da
 }
 
 .badge {
-	@apply bg-red-400 px-2 py-1 rounded;
+	@apply px-2 py-1 rounded;
 	box-shadow: inset -2px -2px 10px 3px rgba(0, 0, 0, 0.5);
 }
 </style>

@@ -3,3 +3,11 @@
 		<slot />
 	</div>
 </template>
+
+<script setup>
+const emit = defineEmits(['loaded']);
+
+onMounted(() => {
+	emit('loaded', true);
+});
+</script>

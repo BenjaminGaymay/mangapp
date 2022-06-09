@@ -47,10 +47,7 @@ export const useDownloads = defineStore('downloads-store', {
 				const { data } = await useFetch<ChapterPages>(`/api/manga/${slug}/${number}`);
 				const { pages, ...infos } = data.value;
 
-				console.log(pages.length);
-
 				await Promise.all(pages.map(uri => this.dlPage(uri)));
-				console.log('chapter dl');
 
 				const id: string = `[chapter]:${slug}-${number}`;
 				const value: DBChapter = { pages: [...pages], infos: { ...infos } };
@@ -72,8 +69,6 @@ export const useDownloads = defineStore('downloads-store', {
 			page.crossOrigin = 'anonymous';
 
 			const promise = new Promise<void>(resolve => {
-				console.log('promise exec');
-
 				page.onerror = () => resolve();
 
 				page.addEventListener('load', async () => {
@@ -86,7 +81,6 @@ export const useDownloads = defineStore('downloads-store', {
 
 					const dataURI: DBPage = canvas.toDataURL('image/png');
 
-					console.log('end');
 					await set(`[page]:${uri}`, dataURI);
 
 					resolve();
