@@ -28,8 +28,6 @@
 const { data, pending } = useLazyFetch<HomeManga[]>(`/api/home/week`);
 const weekHots = ref((data.value && data.value ? data.value.filter(m => m.isHot) : []) as HomeManga[]);
 
-console.log(weekHots.value);
-
 watch(data, (value: HomeManga[]) => {
 	weekHots.value = value.filter(m => m.isHot);
 });

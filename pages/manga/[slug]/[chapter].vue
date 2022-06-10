@@ -56,7 +56,7 @@
 					<img v-if="visible >= i" :src="page" :data-index="i + 1" class="mx-auto" />
 				</div>
 
-				<div class="px-2 py-4" v-if="chapter.next && current >= chapter.pages.length">
+				<div class="px-2 py-4" v-if="chapter.next && visible >= chapter.pages.length">
 					<NuxtLink :to="chapter.next">
 						<div class="next px-4 py-2 rounded-lg flex items-center justify-between">
 							<div>{{ nextName }}</div>
@@ -67,7 +67,7 @@
 					</NuxtLink>
 				</div>
 
-				<div class="px-2 py-4" v-else-if="current >= chapter.pages.length">
+				<div class="px-2 py-4" v-else-if="visible >= chapter.pages.length">
 					<NuxtLink to="/">
 						<div class="next px-4 py-2 rounded-lg flex items-center gap-x-3">
 							<div class="w-4">
@@ -132,7 +132,16 @@ function handleScroll() {
 	}
 
 	if (visible.value >= chapter.value.pages.length) {
-		return store.set(key, { read: current.value >= chapter.value.pages.length, page: current.value });
+		let ridden = current.value >= chapter.value.pages.length;
+		if (screen.value.scrollTop + screen.value.clientHeight >= screen.value.scrollHeight - 10) {
+			ridden = true;
+			current.value = chapter.value.pages.length;
+		}
+
+		return store.set(key, {
+			read: ridden,
+			page: current.value
+		});
 	}
 
 	if (screen.value.scrollTop + screen.value.clientHeight >= screen.value.scrollHeight - window.innerHeight / 2) {

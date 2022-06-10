@@ -41,8 +41,6 @@ const idb = useIdb();
 
 const sorted = computed(() => {
 	return dl.downloaded.reduce((acc, cur: DlChapter) => {
-		if (cur.infos.name && cur.infos.name.includes('</')) console.log(cur.infos.name);
-
 		if (acc[cur.slug]) acc[cur.slug] = [...acc[cur.slug], cur].sort((a, b) => a.infos.number - b.infos.number);
 		else acc[cur.slug] = [cur];
 

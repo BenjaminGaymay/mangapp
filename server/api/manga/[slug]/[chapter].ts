@@ -22,7 +22,6 @@ async function getChapterPages(slug: string, chapter: string): Promise<ChapterPa
 	});
 
 	const [, name]: string[] = page.match(rName) || [];
-	console.log(name);
 
 	const [, manga]: string[] = page.match(rManga(slug)) || [];
 

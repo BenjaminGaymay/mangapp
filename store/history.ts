@@ -9,7 +9,7 @@ export const useHistory = defineStore('history-store', {
 
 	actions: {
 		async set(key: string, value: DBHistory): Promise<void> {
-			this.list[key] = value;
+			this.list = { ...this.list, [`[history]:${key}`]: value };
 			return set(`[history]:${key}`, value);
 		},
 
