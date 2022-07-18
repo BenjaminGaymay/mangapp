@@ -2,7 +2,7 @@ async function searchManga(query): Promise<QueryResult[]> {
 	const params: URLSearchParams = new URLSearchParams();
 	params.append('search', query);
 
-	const response: Response = await fetch('https://www.japscan.ws/live-search/', {
+	const response: Response = await fetch('https://www.japscan.me/live-search/', {
 		method: 'POST',
 		headers: { 'X-Requested-With': 'XMLHttpRequest' },
 		body: params

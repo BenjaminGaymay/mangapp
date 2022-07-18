@@ -3,7 +3,7 @@ import { monoMap, multiMap } from '~~/server/utils/cypher';
 import { clearString } from '~~/server/utils/string';
 
 async function fetchFirstPage(slug: string, chapter: string): Promise<string> {
-	const response: Response = await fetch(`https://www.japscan.ws/lecture-en-ligne/${slug}/${chapter}/`);
+	const response: Response = await fetch(`https://www.japscan.me/lecture-en-ligne/${slug}/${chapter}/`);
 	const text: string = await response.text();
 
 	return clearString(text);

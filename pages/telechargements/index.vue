@@ -10,7 +10,7 @@
 			<div v-for="manga in sorted" class="manga">
 				<div
 					class="w-full h-14 rounded-lg manga-name flex items-center justify-center"
-					:style="`--url: url('https://japscan.ws/imgs/mangas/${manga[0].slug}.jpg')`"
+					:style="`--url: url('https://japscan.me/imgs/mangas/${manga[0].slug}.jpg')`"
 				>
 					<div class="text-xl">
 						{{ manga[0].infos.manga }}

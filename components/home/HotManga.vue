@@ -35,7 +35,7 @@ const props = defineProps({
 	}
 });
 
-const imgUri = computed((): string => `https://japscan.ws/imgs/mangas/${props.slug}.jpg`);
+const imgUri = computed((): string => `https://japscan.me/imgs/mangas/${props.slug}.jpg`);
 </script>
 
 <style lang="scss" scoped>

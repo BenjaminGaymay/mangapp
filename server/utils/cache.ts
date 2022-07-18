@@ -70,7 +70,7 @@ export async function getWeeklyTrends(): Promise<Trends[]> {
 }
 
 async function fetchHomePage(): Promise<string> {
-	const response: Response = await fetch('https://www.japscan.ws');
+	const response: Response = await fetch('https://www.japscan.me');
 	const text: string = await response.text();
 
 	return clearString(text);
