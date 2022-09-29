@@ -158,7 +158,7 @@ async function getDecodeCypherObject() {
 	];
 
 	const MAPPED = await Promise.all(
-		MANGA.map(async ({ slug, chapter, decoded }) => {
+		WEBTOON.map(async ({ slug, chapter, decoded }) => {
 			const page = await fetchFirstPage(slug, chapter);
 			const uri = getOriginalURI(page);
 
