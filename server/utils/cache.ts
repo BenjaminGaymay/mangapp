@@ -115,7 +115,7 @@ function parseMangaChapters(manga: string): Chapter[] {
 			name,
 			number: parseFloat(number.replace('volume-', '')),
 			isVolume,
-			infos
+			infos: infos?.length > 10 ? undefined : infos
 		};
 	});
 }
