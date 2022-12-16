@@ -6,7 +6,7 @@ export const rInfos: RegExp = /<span.*?>(.+?)<\/span>/;
 
 export const rManga = {
 	title: new RegExp('<h1>(.+?)</h1>'),
-	img: new RegExp('<img .+? src="(.+?)" alt="">'),
+	img: new RegExp('<img style=".+?".*?src="(.+?)" alt="">'),
 	date: new RegExp('Date Sortie:</span>(.+?)</p>'),
 	status: new RegExp('Statut:</span>(.+?)</p>'),
 	type: new RegExp('Type\\(s\\):</span>(.+?)</p>'),
