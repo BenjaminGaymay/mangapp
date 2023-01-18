@@ -9,6 +9,7 @@
 		"@kevinmarrec/nuxt-pwa": "^0.1.0",
 		"@nuxtjs/tailwindcss": "^5.0.4",
 		"@pinia/nuxt": "^0.1.9",
+		"cloudflare-scraper": "^2.0.0",
 		"entities": "^4.3.0",
 		"idb-keyval": "^6.1.0",
 		"nuxt": "^3.0.0-rc.3",

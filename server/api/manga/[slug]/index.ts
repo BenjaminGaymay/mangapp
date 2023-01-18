@@ -1,12 +1,17 @@
+import cloudscraper from 'cloudflare-scraper';
+
 import { rChapterNumber } from '~~/server/utils/regex/home';
 import { rManga, rChapters, rDate, rHref, rInfos, rName } from '~~/server/utils/regex/manga';
 import { clearString } from '~~/server/utils/string';
 
 async function fetchMangaPage(slug: string): Promise<string> {
-	const response: Response = await fetch(`https://www.japscan.me/manga/${slug}/`);
-	const text: string = await response.text();
+	// const response: Response = await fetch(`https://www.japscan.me/manga/${slug}/`);
+	// const text: string = await response.text();
 
-	return clearString(text);
+	// return clearString(text);
+
+	const response = await cloudscraper.get(`https://www.japscan.me/manga/${slug}/`);
+	return clearString(response.body);
 }
 
 async function getMangaData(slug: string): Promise<Manga> {
