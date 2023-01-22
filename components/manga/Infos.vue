@@ -2,7 +2,7 @@
 	<div class="infos">
 		<div class="flex flex-nowrap gap-x-2">
 			<div class="infos-img overflow-hidden">
-				<img class="rounded" :src="infos.img" />
+				<img class="rounded" :src="`/api/image/${slug}`" />
 
 				<div class="absolute bottom-1 left-1 z-10">
 					<div class="text-xs">{{ infos.type }}</div>
@@ -28,12 +28,21 @@
 </template>
 
 <script lang="ts" setup>
-defineProps({
+const props = defineProps({
 	infos: {
 		type: Object,
 		required: true
+	},
+
+	slug: {
+		type: String,
+		required: true
 	}
 });
+
+console.log(props);
+
+// const { data: imgUri } = await useLazyFetch<string>(`/api/image/${props.infos.img}`);
 </script>
 
 <style lang="scss" scoped>

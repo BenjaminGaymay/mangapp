@@ -37,7 +37,7 @@
 					</MangaTitle>
 				</div>
 
-				<MangaInfos v-if="manga" :infos="manga" class="mx-4" />
+				<MangaInfos v-if="manga" :infos="manga" :slug="slug" class="mx-4" />
 			</template>
 
 			<div class="grid grid-cols-1 gap-y-1.5 mx-2 mt-6">

@@ -1,6 +1,6 @@
 <template>
 	<div class="manga relative flex flex-col items-center gap-2" :class="{ size: fixed }">
-		<img class="rounded flex-grow" :src="imgUri" />
+		<img class="rounded flex-grow" :src="`/api/image/${props.slug}`" />
 
 		<div v-if="info" class="absolute top-1 right-1 badge">
 			{{ info }}
@@ -34,8 +34,6 @@ const props = defineProps({
 		default: false
 	}
 });
-
-const imgUri = computed((): string => `https://japscan.me/imgs/mangas/${props.slug}.jpg`);
 </script>
 
 <style lang="scss" scoped>

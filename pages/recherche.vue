@@ -5,6 +5,8 @@
 		</Head>
 
 		<Page>
+			<UiLoader class="z-20" bg="#00000055" v-if="loading" />
+
 			<div class="mx-auto w-min">
 				<input
 					class="search-input rounded-lg px-2 py-1.5"
@@ -28,6 +30,7 @@
 <script setup lang="ts">
 let timeout = null;
 const manga = ref([]);
+const loading = ref(false);
 
 function handleSearch(event, ms = 200) {
 	const query = event.target.value.replace(/^\s+|\s+$/g, '');
@@ -36,8 +39,11 @@ function handleSearch(event, ms = 200) {
 	if (timeout) clearTimeout(timeout);
 
 	timeout = setTimeout(async () => {
+		loading.value = true;
 		const { data } = await useFetch<QueryResult[]>(`/api/search/${query}`);
 		if (data) manga.value = data.value;
+
+		loading.value = false;
 	}, ms);
 }
 </script>
@@ -49,5 +55,8 @@ function handleSearch(event, ms = 200) {
 	&:focus {
 		outline: 0;
 	}
+}
+
+.loader {
 }
 </style>

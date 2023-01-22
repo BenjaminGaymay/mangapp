@@ -1,10 +1,19 @@
 <template>
-	<div class="absolute inset-0 h-full w-full">
+	<div class="absolute inset-0 h-full w-full" :style="{ backgroundColor: props.bg }">
 		<div class="loader relative left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 transform">
 			<div v-for="i in 5" :key="i" class="absolute top-0 left-0 right-0 bottom-0"></div>
 		</div>
 	</div>
 </template>
+
+<script setup lang="ts">
+const props = defineProps({
+	bg: {
+		type: String,
+		default: null
+	}
+});
+</script>
 
 <style lang="scss" scoped>
 .loader {
