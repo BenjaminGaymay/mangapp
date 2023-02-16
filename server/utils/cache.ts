@@ -81,7 +81,7 @@ async function fetchHomePage(): Promise<string> {
 	// const text: string = await response.text();
 	// return clearString(text);
 
-	const response = await cloudscraper.get('https://www.japscan.me');
+	const response = await cloudscraper.get('https://www.japscan.lol');
 	return clearString(response.body);
 }
 

@@ -5,12 +5,7 @@ import { rManga, rChapters, rDate, rHref, rInfos, rName } from '~~/server/utils/
 import { clearString } from '~~/server/utils/string';
 
 async function fetchMangaPage(slug: string): Promise<string> {
-	// const response: Response = await fetch(`https://www.japscan.me/manga/${slug}/`);
-	// const text: string = await response.text();
-
-	// return clearString(text);
-
-	const response = await cloudscraper.get(`https://www.japscan.me/manga/${slug}/`);
+	const response = await cloudscraper.get(`https://www.japscan.lol/manga/${slug}/`);
 	return clearString(response.body);
 }
 
@@ -20,7 +15,7 @@ async function getMangaData(slug: string): Promise<Manga> {
 	const data: MangaData = Object.keys(rManga).reduce((acc, key) => {
 		const [, match]: string[] = page.match(rManga[key]) || [];
 
-		if (key === 'img') acc[key] = `https://japscan.me${match}`;
+		if (key === 'img') acc[key] = `https://japscan.lol${match}`;
 		else if (key === 'genre') acc[key] = match?.trim()?.split(', ');
 		else if (key === 'isAnime') acc[key] = Boolean(match === 'OUI');
 		else if (key === 'volume') acc[key] = parseFloat(match);

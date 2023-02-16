@@ -4,7 +4,7 @@ async function searchManga(query): Promise<QueryResult[]> {
 	const params: URLSearchParams = new URLSearchParams();
 	params.append('search', query);
 
-	const response = await cloudscraper.post('https://www.japscan.me/live-search/', {
+	const response = await cloudscraper.post('https://www.japscan.lol/live-search/', {
 		body: params.toString(),
 		headers: {
 			'X-Requested-With': 'XMLHttpRequest',

@@ -3,18 +3,10 @@ import cloudscraper from 'cloudflare-scraper';
 import { decodeCypher } from '~~/server/utils/cypher';
 import { rName, rManga, rNext, rPrevious } from '~~/server/utils/regex/chapter';
 
-// import { rDecode, rImgUri, rFirstUri, rName, rManga, rNext, rPrevious } from '~~/server/utils/regex/chapter';
-// import { monoMap, multiMap } from '~~/server/utils/cypher';
-
 import { clearString } from '~~/server/utils/string';
 
 export async function fetchFirstPage(slug: string, chapter: string): Promise<string> {
-	// const response: Response = await fetch(`https://www.japscan.me/lecture-en-ligne/${slug}/${chapter}/`);
-	// const text: string = await response.text();
-
-	// return clearString(text);
-
-	const response = await cloudscraper.get(`https://www.japscan.me/lecture-en-ligne/${slug}/${chapter}/`);
+	const response = await cloudscraper.get(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`);
 	return clearString(response.body);
 }
 

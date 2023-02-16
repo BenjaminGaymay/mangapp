@@ -8,7 +8,7 @@ export default defineEventHandler(async (event): Promise<any> => {
 
 	// if (existsSync(`./public/${name}`)) return name;
 
-	const response = await cloudscraper.get(`https://japscan.me/imgs/mangas/${slug}.jpg`);
+	const response = await cloudscraper.get(`https://japscan.lol/imgs/mangas/${slug}.jpg`);
 	if (!response) return null;
 
 	// writeFileSync(name, response.rawBody);
