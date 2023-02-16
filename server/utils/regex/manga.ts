@@ -1,8 +1,8 @@
-export const rChapters: RegExp = /<div class=\"chapters_list.*?\">(.+?)<\/div>/g;
-export const rDate: RegExp = /<span class=\"float-right\">(.+?)<\/span>/;
-export const rHref: RegExp = new RegExp('<a.*?href="(.+?)".*?>');
-export const rName: RegExp = new RegExp('VF: (.*)(Attention:)?</a');
-export const rInfos: RegExp = /<span.*?>(.+?)<\/span>/;
+export const mangaChapters: RegExp = /<div class=\"chapters_list.*?\">(.+?)<\/div>/g;
+export const mangaDate: RegExp = /<span class=\"float-right\">(.+?)<\/span>/;
+export const mangaHref: RegExp = new RegExp('<a.*?href="(.+?)".*?>');
+export const mangaName: RegExp = new RegExp('VF: (.*)(Attention:)?</a');
+export const mangaInfos: RegExp = /<span.*?>(.+?)<\/span>/;
 
 export const rManga = {
 	title: new RegExp('<h1>(.+?)</h1>'),

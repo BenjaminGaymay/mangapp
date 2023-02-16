@@ -1,18 +1,22 @@
 import cloudscraper from 'cloudflare-scraper';
 
-import { rChapterNumber } from '~~/server/utils/regex/home';
-import { rManga, rChapters, rDate, rHref, rInfos, rName } from '~~/server/utils/regex/manga';
-import { clearString } from '~~/server/utils/string';
+// import { homeChapterNumber } from '~~/server/utils/regex/home';
+// import { rManga, mangaChapters, mangaDate, mangaHref, mangaInfos, mangaName } from '~~/server/utils/regex/manga';
+// import { clearString } from '~~/server/utils/string';
 
 async function fetchMangaPage(slug: string): Promise<string> {
-	const response = await cloudscraper.get(`https://www.japscan.lol/manga/${slug}/`);
+	const response = await cloudscraper.get(`https://www.japscan.lol/manga/${slug}/`, {
+		timeout: { request: 60000 }
+	});
 	return clearString(response.body);
 }
+
+// type Keys = 'title' | 'img' | 'date' | 'status' | 'type' | 'genre' | 'author' | 'volume' | 'isAnime' | 'synopsis';
 
 async function getMangaData(slug: string): Promise<Manga> {
 	const page: string = await fetchMangaPage(slug);
 
-	const data: MangaData = Object.keys(rManga).reduce((acc, key) => {
+	const data: MangaData = Object.keys(rManga).reduce((acc, key: string) => {
 		const [, match]: string[] = page.match(rManga[key]) || [];
 
 		if (key === 'img') acc[key] = `https://japscan.lol${match}`;
@@ -22,15 +26,15 @@ async function getMangaData(slug: string): Promise<Manga> {
 		else acc[key] = match?.trim();
 
 		return acc;
-	}, {});
+	}, {} as MangaData);
 
-	const parsed: Chapter[] = [...page.matchAll(rChapters)].map(([chapter]: string[]): Chapter => {
-		const [, date]: string[] = chapter.match(rDate);
-		const [, href]: string[] = chapter.match(rHref);
-		const [, name]: string[] = chapter.match(rName) || [];
-		const [, infos]: string[] = name?.match(rInfos) || [];
-		const [, number]: string[] = href.match(rChapterNumber) || [];
-		const isVolume: boolean = number.includes('volume') || undefined;
+	const parsed: Chapter[] = [...page.matchAll(mangaChapters)].map(([chapter]: string[]): Chapter => {
+		const [, date]: string[] = chapter.match(mangaDate) || [];
+		const [, href]: string[] = chapter.match(mangaHref) || [];
+		const [, name]: string[] = chapter.match(mangaName) || [];
+		const [, infos]: string[] = name?.match(mangaInfos) || [];
+		const [, number]: string[] = href.match(homeChapterNumber) || [];
+		const isVolume: boolean = number.includes('volume');
 
 		return {
 			href: href.replace('/lecture-en-ligne/', '/manga/').replace(/\/$/, ''),
@@ -46,7 +50,7 @@ async function getMangaData(slug: string): Promise<Manga> {
 }
 
 export default defineEventHandler(async (event): Promise<Manga> => {
-	const slug: string = event.context.params.slug;
+	const slug: string = event.context.params?.slug || '';
 
 	return getMangaData(slug);
 });

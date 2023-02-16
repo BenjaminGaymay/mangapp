@@ -1,19 +1,19 @@
 import cloudscraper from 'cloudflare-scraper';
 
-import { clearString } from '~~/server/utils/string';
-import {
-	rManga,
-	rChapters,
-	rHomeV1,
-	rHomeV2,
-	rChapterName,
-	rChapterNumber,
-	rTrend,
-	rTrendGroup
-} from '~~/server/utils/regex/home';
+// import { clearString } from '~~/server/utils/string';
+// import {
+// 	homeManga,
+// 	homeChapters,
+// 	homeV1,
+// 	homeV2,
+// 	homeChapterName,
+// 	homeChapterNumber,
+// 	homeTrend,
+// 	homeTrendGroup
+// } from '~/server/utils/regex/home';
 
-let MangaCache: HomeManga[][] = null;
-let TrendsCache: Trends[] = null;
+let MangaCache: HomeManga[][] | null = null;
+let TrendsCache: Trends[] | null = null;
 
 export async function getDailyChapters(index: number): Promise<HomeManga[]> {
 	if (MangaCache && MangaCache[index]) return MangaCache[index];
@@ -29,7 +29,7 @@ export async function getDailyChapters(index: number): Promise<HomeManga[]> {
 }
 
 export async function getWeeklyChapters(): Promise<HomeManga[]> {
-	if (!MangaCache) {
+	if (MangaCache === null) {
 		const page: string = await fetchHomePage();
 		const manga: HomeManga[][] = parseHomePage(page);
 		const trends: Trends[] = parseTrends(page);
@@ -38,6 +38,7 @@ export async function getWeeklyChapters(): Promise<HomeManga[]> {
 		updateTrendsCache(trends);
 	}
 
+	if (!MangaCache) return [];
 	const wManga: HomeManga[] = [];
 
 	for (const day of MangaCache) {
@@ -72,23 +73,24 @@ export async function getWeeklyTrends(): Promise<Trends[]> {
 }
 
 async function fetchHomePage(): Promise<string> {
-	const response = await cloudscraper.get('https://www.japscan.lol');
+	const response = await cloudscraper.get('https://www.japscan.lol', { timeout: { request: 60000 } });
 	return clearString(response.body);
 }
 
 function parseHomePage(text: string): HomeManga[][] {
-	const regex: RegExp[] = text.includes('id="tab-1"') ? rHomeV1 : rHomeV2;
+	const regex: RegExp[] = text.includes('id="tab-1"') ? homeV1 : homeV2;
 
 	const days: HomeManga[][] = regex.map(r => {
-		const [match] = text.match(r);
-		return parseDailyManga(findDailyManga(match));
+		const match = text.match(r);
+		if (match && match.length > 0) return parseDailyManga(findDailyManga(match[0]));
+		return [];
 	});
 
 	return days;
 }
 
 function findDailyManga(day: string): RegExpMatchArray[] {
-	return [...day.matchAll(rManga)];
+	return [...day.matchAll(homeManga)];
 }
 
 function parseDailyManga(mangaList: RegExpMatchArray[]): HomeManga[] {
@@ -105,10 +107,10 @@ function parseDailyManga(mangaList: RegExpMatchArray[]): HomeManga[] {
 }
 
 function parseMangaChapters(manga: string): Chapter[] {
-	return [...manga.matchAll(rChapters)].map(([, href, cName, , , infos]) => {
-		const [, name]: string[] = cName.match(rChapterName) || [];
-		const [, number]: string[] = href.match(rChapterNumber) || [];
-		const isVolume: boolean = number.includes('volume') || undefined;
+	return [...manga.matchAll(homeChapters)].map(([, href, cName, , , infos]) => {
+		const [, name]: string[] = cName.match(homeChapterName) || [];
+		const [, number]: string[] = href.match(homeChapterNumber) || [];
+		const isVolume: boolean = number.includes('volume');
 
 		return {
 			href: href.replace('/lecture-en-ligne/', '/manga/'),
@@ -121,8 +123,8 @@ function parseMangaChapters(manga: string): Chapter[] {
 }
 
 function parseTrends(text: string): Trends[] {
-	const [_day, week, _year]: RegExpMatchArray[] = [...text.matchAll(rTrendGroup)];
-	const trends: Trends[] = [...week[0].matchAll(rTrend)].map(([, slug, name]) => ({ slug, name }));
+	const [_day, week, _year]: RegExpMatchArray[] = [...text.matchAll(homeTrendGroup)];
+	const trends: Trends[] = [...week[0].matchAll(homeTrend)].map(([, slug, name]) => ({ slug, name }));
 
 	return trends;
 }

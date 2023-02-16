@@ -1,10 +1,11 @@
 import cloudscraper from 'cloudflare-scraper';
 
-async function searchManga(query): Promise<QueryResult[]> {
+async function searchManga(query: string): Promise<QueryResult[]> {
 	const params: URLSearchParams = new URLSearchParams();
 	params.append('search', query);
 
 	const response = await cloudscraper.post('https://www.japscan.lol/live-search/', {
+		timeout: { request: 60000 },
 		body: params.toString(),
 		headers: {
 			'X-Requested-With': 'XMLHttpRequest',
@@ -18,7 +19,7 @@ async function searchManga(query): Promise<QueryResult[]> {
 }
 
 export default defineEventHandler(async (event): Promise<QueryResult[]> => {
-	const query: string = event.context.params.query;
+	const query: string = event.context.params?.query || '';
 	const normalized: string = query.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
 	return searchManga(normalized);

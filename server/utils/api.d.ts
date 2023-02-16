@@ -1,3 +1,5 @@
+declare module 'cloudflare-scraper';
+
 interface HomeManga {
 	slug: string;
 	name: string;

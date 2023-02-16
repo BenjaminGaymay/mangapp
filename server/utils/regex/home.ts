@@ -1,4 +1,4 @@
-export const rHomeV1: RegExp[] = [
+export const homeV1: RegExp[] = [
 	new RegExp('id="tab-1".*?>(.+?)<div class="tab-pane container " id="tab-2">'),
 	new RegExp('id="tab-2".*?>(.+?)<div class="tab-pane container " id="tab-3">'),
 	new RegExp('id="tab-3".*?>(.+?)<div class="tab-pane container " id="tab-4">'),
@@ -9,7 +9,7 @@ export const rHomeV1: RegExp[] = [
 	new RegExp('id="tab-8".*?>(.+)')
 ];
 
-export const rHomeV2: RegExp[] = [
+export const homeV2: RegExp[] = [
 	new RegExp('<span data-id="1".*?>(.+?)<span data-id="2"'),
 	new RegExp('<span data-id="2".*?>(.+?)<span data-id="3"'),
 	new RegExp('<span data-id="3".*?>(.+?)<span data-id="4"'),
@@ -20,13 +20,13 @@ export const rHomeV2: RegExp[] = [
 	new RegExp('<span data-id="8".*?>(.+?)')
 ];
 
-export const rManga: RegExp = new RegExp('href="/manga/(.*?)/">(.*?)<.*?</div', 'g');
-export const rChapters: RegExp = new RegExp(
+export const homeManga: RegExp = new RegExp('href="/manga/(.*?)/">(.*?)<.*?</div', 'g');
+export const homeChapters: RegExp = new RegExp(
 	'href="(/lecture.+?)">(.*?)</a>.*?((<span.*?>(.+?)</span>)|(</p>)|(</div))',
 	'g'
 );
-export const rChapterName: RegExp = new RegExp('VF: (.*)(Attention:)?');
-export const rChapterNumber: RegExp = new RegExp('/((volume-)?([0-9]|\\.)+)/$');
+export const homeChapterName: RegExp = new RegExp('VF: (.*)(Attention:)?');
+export const homeChapterNumber: RegExp = new RegExp('/((volume-)?([0-9]|\\.)+)/$');
 
-export const rTrendGroup: RegExp = new RegExp('<ol class="rectangle-list rounded-0 list-group".+?</ol', 'g');
-export const rTrend: RegExp = new RegExp('<a.*?href="/manga/(.+?)/">(.+?)</a>', 'g');
+export const homeTrendGroup: RegExp = new RegExp('<ol class="rectangle-list rounded-0 list-group".+?</ol', 'g');
+export const homeTrend: RegExp = new RegExp('<a.*?href="/manga/(.+?)/">(.+?)</a>', 'g');

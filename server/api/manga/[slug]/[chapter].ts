@@ -1,33 +1,36 @@
 import cloudscraper from 'cloudflare-scraper';
 
-import { decodeCypher } from '~~/server/utils/cypher';
-import { rName, rManga, rNext, rPrevious } from '~~/server/utils/regex/chapter';
+// import { decodeCypher } from '~~/server/utils/cypher';
+// import { chapterName, chapterManga, chapterNext, chapterPrevious } from '~~/server/utils/regex/chapter';
 
-import { clearString } from '~~/server/utils/string';
+// import { clearString } from '~~/server/utils/string';
 
 export async function fetchFirstPage(slug: string, chapter: string): Promise<string> {
-	const response = await cloudscraper.get(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`);
+	const response = await cloudscraper.get(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`, {
+		timeout: { request: 60000 }
+	});
+
 	return clearString(response.body);
 }
 
 async function getChapterPages(slug: string, chapter: string): Promise<ChapterPages> {
 	const page: string = await fetchFirstPage(slug, chapter);
 
-	const [, cypher] = page.match(/<i id="data" data-data="(.+?)"/);
+	const [, cypher] = page.match(/<i id="data" data-data="(.+?)"/) || [null, ''];
 	const { imagesLink: pages } = decodeCypher(cypher);
 
-	const [, name]: string[] = page.match(rName) || [];
+	const [, name]: string[] = page.match(chapterName) || [];
 
-	const [, manga]: string[] = page.match(rManga(slug)) || [];
+	const [, manga]: string[] = page.match(chapterManga(slug)) || [];
 
-	const [, next]: string[] = page.match(rNext) || [];
-	const [, previous]: string[] = page.match(rPrevious) || [];
+	const [, next]: string[] = page.match(chapterNext) || [];
+	const [, previous]: string[] = page.match(chapterPrevious) || [];
 
 	const infos = {
 		name: name?.split('Attention :')[0],
 		manga,
 		number: parseFloat(chapter.replace('volume-', '')),
-		isVolume: chapter.includes('volume') || undefined,
+		isVolume: chapter.includes('volume') || false,
 		next: next?.replace('/lecture-en-ligne/', '/manga/')?.replace(/\/$/, ''),
 		previous: previous?.replace('/lecture-en-ligne/', '/manga/')?.replace(/\/$/, '')
 	};
@@ -47,12 +50,12 @@ async function getChapterPages(slug: string, chapter: string): Promise<ChapterPa
 // 		return `https://cdn.statically.io/img/c.japscan.ws/${decoded}.${ext}`;
 // 	});
 
-// 	const [, name]: string[] = page.match(rName) || [];
+// 	const [, name]: string[] = page.match(chapterName) || [];
 
-// 	const [, manga]: string[] = page.match(rManga(slug)) || [];
+// 	const [, manga]: string[] = page.match(chapterManga(slug)) || [];
 
-// 	const [, next]: string[] = page.match(rNext) || [];
-// 	const [, previous]: string[] = page.match(rPrevious) || [];
+// 	const [, next]: string[] = page.match(chapterNext) || [];
+// 	const [, previous]: string[] = page.match(chapterPrevious) || [];
 
 // 	const infos = {
 // 		name: name?.split('Attention :')[0],
@@ -85,8 +88,8 @@ async function getChapterPages(slug: string, chapter: string): Promise<ChapterPa
 // }
 
 export default defineEventHandler(async (event): Promise<ChapterPages> => {
-	const slug: string = event.context.params.slug;
-	const chapter: string = event.context.params.chapter;
+	const slug: string = event.context.params?.slug || '';
+	const chapter: string = event.context.params?.chapter || '';
 
 	return getChapterPages(slug, chapter);
 });

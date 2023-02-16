@@ -1,27 +1,26 @@
-import { defineNuxtConfig } from 'nuxt';
-
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
-	head: {
-		title: 'Mangapp',
-		meta: [
-			{ charset: 'utf-8' },
-			{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
-			{ hid: 'description', name: 'description', content: '' }
-		]
-	},
-
 	app: {
-		buildAssetsDir: '/assets/'
+		buildAssetsDir: '/assets/',
+		head: {
+			title: 'Mangapp',
+			meta: [
+				{ charset: 'utf-8' },
+				{ name: 'viewport', content: 'width=device-width, initial-scale=1' },
+				{ hid: 'description', name: 'description', content: '' }
+			]
+		}
 	},
 
-	css: ['@/assets/css/main.css'],
-	modules: ['@nuxtjs/tailwindcss'],
+	modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@kevinmarrec/nuxt-pwa'],
 
-	buildModules: [['@pinia/nuxt', { disableVuex: true }], '@kevinmarrec/nuxt-pwa'],
+	css: ['~/assets/css/main.css'],
 
-	typescript: {
-		shim: false
+	postcss: {
+		plugins: {
+			tailwindcss: {},
+			autoprefixer: {}
+		}
 	},
 
 	pwa: {
