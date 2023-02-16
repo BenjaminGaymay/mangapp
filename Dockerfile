@@ -1,4 +1,4 @@
-FROM node:16-alpine as version
+FROM node:18-alpine as version
 
 WORKDIR /mangas
 
@@ -11,11 +11,11 @@ RUN node -e "['./package.json','./package-lock.json'].forEach(n => {  \
   });"
 
 
-FROM node:16-alpine as build
+FROM node:18-alpine as build
 
 WORKDIR /mangas
 
-RUN apk add xvfb chromium
+RUN apk add xvfb chromium python3
 
 ENV NODE_CHROMIUM_SKIP_INSTALL=true
 ENV CHROME_EXECUTABLE_PATH=/usr/bin/chromium-browser

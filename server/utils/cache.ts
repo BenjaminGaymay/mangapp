@@ -72,15 +72,6 @@ export async function getWeeklyTrends(): Promise<Trends[]> {
 }
 
 async function fetchHomePage(): Promise<string> {
-	// const response: Response = await fetch('https://www.japscan.me', {
-	// headers: {
-	// 	Cookie: 'cf_clearance=3tKZRae1Wagc2KlUxPCHkC0_0v0l_NIneqFA6_2LRDQ-1674048900-0-150',
-	// 	'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/109.0'
-	// }
-	// });
-	// const text: string = await response.text();
-	// return clearString(text);
-
 	const response = await cloudscraper.get('https://www.japscan.lol');
 	return clearString(response.body);
 }
