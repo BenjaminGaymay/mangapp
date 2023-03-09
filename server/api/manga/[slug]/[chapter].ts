@@ -35,7 +35,7 @@ async function getChapterPages(slug: string, chapter: string): Promise<ChapterPa
 		previous: previous?.replace('/lecture-en-ligne/', '/manga/')?.replace(/\/$/, '')
 	};
 
-	return { ...infos, pages };
+	return { ...infos, pages: pages.map(e => e.replace(/https:\/\/c\.japscan\.lol\//, '')) };
 }
 
 // async function getChapterPages(slug: string, chapter: string): Promise<ChapterPages> {

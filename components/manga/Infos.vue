@@ -2,7 +2,7 @@
 	<div class="infos">
 		<div class="flex flex-nowrap gap-x-2">
 			<div class="infos-img overflow-hidden">
-				<img class="rounded" :src="`/api/image/${slug}`" />
+				<img class="rounded" :src="`/api/image/manga/${slug}`" />
 
 				<div class="absolute bottom-1 left-1 z-10">
 					<div class="text-xs">{{ infos.type }}</div>
@@ -10,20 +10,20 @@
 				</div>
 			</div>
 
-			<div class="infos-others text-right text-sm flex flex-col justify-between py-3 px-1 rounded-l-md">
+			<div class="infos-others flex flex-col justify-between rounded-l-md py-3 px-1 text-right text-sm">
 				<div>
 					<div>Depuis {{ infos.date }}</div>
 					<div>Volume {{ infos.volume }} ~ {{ infos.status }}</div>
 					<div v-if="infos.isAnime" class="mt-2">Disponible en animé</div>
 				</div>
 
-				<div class="infos-tags grid grid-cols-3 w-full gap-y-2">
+				<div class="infos-tags grid w-full grid-cols-3 gap-y-2">
 					<div v-for="genre in infos.genre">{{ genre }}</div>
 				</div>
 			</div>
 		</div>
 
-		<div class="infos-text text-xs text-justify px-4 mt-3 py-3 rounded-b-lg">{{ infos.synopsis }}</div>
+		<div class="infos-text mt-3 rounded-b-lg px-4 py-3 text-justify text-xs">{{ infos.synopsis }}</div>
 	</div>
 </template>
 
@@ -39,8 +39,6 @@ const props = defineProps({
 		required: true
 	}
 });
-
-console.log(props);
 
 // const { data: imgUri } = await useLazyFetch<string>(`/api/image/${props.infos.img}`);
 </script>

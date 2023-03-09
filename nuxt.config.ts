@@ -1,7 +1,7 @@
 // https://v3.nuxtjs.org/api/configuration/nuxt.config
 export default defineNuxtConfig({
 	app: {
-		buildAssetsDir: '/assets/',
+		// buildAssetsDir: '/assets/',
 		head: {
 			title: 'Mangapp',
 			meta: [
@@ -14,14 +14,7 @@ export default defineNuxtConfig({
 
 	modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@kevinmarrec/nuxt-pwa'],
 
-	css: ['~/assets/css/main.css'],
-
-	postcss: {
-		plugins: {
-			tailwindcss: {},
-			autoprefixer: {}
-		}
-	},
+	css: ['@/assets/css/main.css'],
 
 	pwa: {
 		manifest: {

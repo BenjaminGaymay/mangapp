@@ -11,7 +11,7 @@
 			ref="screen"
 			@click="navigation = !navigation"
 			@scroll="handleScroll"
-			class="relative overflow-auto h-screen"
+			class="relative h-screen overflow-auto"
 		>
 			<UiLoader v-if="pending || !Boolean(chapter)" />
 			<template v-else>
@@ -23,7 +23,7 @@
 							</NuxtLink>
 						</div>
 						<div class="text-center">
-							<div class="font-semibold text-lg leading-4 pt-1.5">{{ chapter.manga }}</div>
+							<div class="pt-1.5 text-lg font-semibold leading-4">{{ chapter.manga }}</div>
 							<div>{{ chapter.isVolume ? 'Volume' : 'Chapitre' }} {{ chapter.number }}</div>
 						</div>
 
@@ -37,7 +37,7 @@
 						<div class="text-center">{{ current }}/{{ chapter.pages.length }}</div>
 
 						<div class="flex gap-x-2">
-							<div class="w-5 transform rotate-180">
+							<div class="w-5 rotate-180 transform">
 								<NuxtLink v-if="chapter.previous" :to="chapter.previous">
 									<img src="~/assets/svg/arrow/plain.svg" />
 								</NuxtLink>
@@ -53,12 +53,12 @@
 				</transition>
 
 				<div v-for="(page, i) in chapter.pages">
-					<img v-if="visible >= i" :src="page" :data-index="i + 1" class="mx-auto" />
+					<img v-if="visible >= i" :src="`/api/image/chapter/${page}`" :data-index="i + 1" class="mx-auto" />
 				</div>
 
 				<div class="px-2 py-4" v-if="chapter.next && visible >= chapter.pages.length">
 					<NuxtLink :to="chapter.next">
-						<div class="next px-4 py-2 rounded-lg flex items-center justify-between">
+						<div class="next flex items-center justify-between rounded-lg px-4 py-2">
 							<div>{{ nextName }}</div>
 							<div class="w-5">
 								<img src="~/assets/svg/arrow/plain.svg" />
@@ -69,7 +69,7 @@
 
 				<div class="px-2 py-4" v-else-if="visible >= chapter.pages.length">
 					<NuxtLink to="/">
-						<div class="next px-4 py-2 rounded-lg flex items-center gap-x-3">
+						<div class="next flex items-center gap-x-3 rounded-lg px-4 py-2">
 							<div class="w-4">
 								<img src="~/assets/svg/arrow/line.svg" />
 							</div>
@@ -172,7 +172,7 @@ useHead({
 		return chapter.value.pages.slice(0, current.value + 3).map(page => ({
 			rel: 'preload',
 			as: 'image',
-			href: page
+			href: `/api/image/chapter/${page}`
 		}));
 	})
 });
@@ -206,7 +206,7 @@ useHead({
 }
 
 nav {
-	@apply fixed w-screen h-14 px-4 z-50 flex flex-nowrap items-center justify-between;
+	@apply fixed z-50 flex h-14 w-screen flex-nowrap items-center justify-between px-4;
 	background-color: #090112;
 }
 

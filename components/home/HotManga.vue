@@ -1,12 +1,12 @@
 <template>
 	<div class="manga relative flex flex-col items-center gap-2" :class="{ size: fixed }">
-		<img class="rounded flex-grow" :src="`/api/image/${props.slug}`" />
+		<img class="flex-grow rounded" :src="`/api/image/manga/${props.slug}`" />
 
-		<div v-if="info" class="absolute top-1 right-1 badge">
+		<div v-if="info" class="badge absolute top-1 right-1">
 			{{ info }}
 		</div>
 
-		<div class="manga-name text-center whitespace-nowrap overflow-hidden overflow-ellipsis w-full text-sm">
+		<div class="manga-name w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-center text-sm">
 			{{ name }}
 		</div>
 	</div>
@@ -56,7 +56,7 @@ const props = defineProps({
 	}
 
 	.badge {
-		@apply bg-blue-300 px-1.5 py-1 rounded text-sm;
+		@apply rounded bg-blue-300 px-1.5 py-1 text-sm;
 		box-shadow: inset -2px -2px 10px 3px rgba(0, 0, 0, 0.5);
 	}
 }

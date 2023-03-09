@@ -6,7 +6,7 @@ const second_key = 'wASN0luxq3k1DYm69gV8FIQPb7EhtjBfoHLOMaGCsRicdTp5nUezWJr2ZKy4
 
 export function decodeCypher(cypher: string) {
 	const b64 = cypher.replace(/[A-Z0-9]/gi, char => first_key[second_key.indexOf(char)]);
-	return JSON.parse(Buffer.from(b64, 'base64').toString('ascii'));
+	return JSON.parse(Buffer.from(b64, 'base64').toString('ascii')) as { imagesLink: string[] };
 }
 
 // export let monoMap: object = {};
