@@ -94,30 +94,35 @@ function findDailyManga(day: string): RegExpMatchArray[] {
 }
 
 function parseDailyManga(mangaList: RegExpMatchArray[]): HomeManga[] {
-	return mangaList.map(m => {
-		const [manga, slug, name]: string[] = m;
+	return mangaList.map(manga => {
+		const [regexed] = manga;
+		// console.log(manga.includes('fa-fire-flame'));
+
+		// const [manga, slug, name]: string[] = m;
+
+		// console.log(slug, name, manga);
 
 		return {
-			slug,
-			name,
-			isHot: manga.includes('>Hot<') || undefined,
-			chapters: parseMangaChapters(manga)
+			slug: regexed.match(/<a href="\/manga\/(.+?)\/?"/)?.at(1) || '',
+			name: regexed.match(/title="(.+?)"/)?.at(1) || '',
+			isHot: regexed.includes('fa-fire-flame') || undefined,
+			chapters: parseMangaChapters(regexed.split('<div class="col-md-5">')[2])
 		};
 	});
 }
 
 function parseMangaChapters(manga: string): Chapter[] {
 	return [...manga.matchAll(homeChapters)].map(([, href, cName, , , infos]) => {
-		const [, name]: string[] = cName.match(homeChapterName) || [];
+		// const [, name]: string[] = cName.match(homeChapterName) || [];
 		const [, number]: string[] = href.match(homeChapterNumber) || [];
 		const isVolume: boolean = number.includes('volume');
 
 		return {
 			href: href.replace('/lecture-en-ligne/', '/manga/'),
-			name,
+			name: cName,
 			number: parseFloat(number.replace('volume-', '')),
 			isVolume,
-			infos: infos?.length > 10 ? undefined : infos
+			infos: undefined // infos?.length > 10 ? undefined : infos
 		};
 	});
 }
@@ -131,6 +136,8 @@ function parseTrends(text: string): Trends[] {
 
 function updateMangaCache(update: HomeManga[][]) {
 	MangaCache = update;
+	// console.log(update);
+
 	setTimeout(() => (MangaCache = null), 180000);
 }
 

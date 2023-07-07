@@ -1,4 +1,5 @@
 import cloudscraper from 'cloudflare-scraper';
+// import { fetchURL } from '~/server/utils/scraper';
 
 // import { decodeCypher } from '~~/server/utils/cypher';
 // import { chapterName, chapterManga, chapterNext, chapterPrevious } from '~~/server/utils/regex/chapter';
@@ -11,6 +12,8 @@ export async function fetchFirstPage(slug: string, chapter: string): Promise<str
 	});
 
 	return clearString(response.body);
+	// const response = await fetchURL(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`);
+	// return clearString(response);
 }
 
 async function getChapterPages(slug: string, chapter: string): Promise<ChapterPages> {
@@ -35,7 +38,8 @@ async function getChapterPages(slug: string, chapter: string): Promise<ChapterPa
 		previous: previous?.replace('/lecture-en-ligne/', '/manga/')?.replace(/\/$/, '')
 	};
 
-	return { ...infos, pages: pages.map(e => e.replace(/https:\/\/c\.japscan\.lol\//, '')) };
+	return { ...infos, pages: pages.map(e => e.replace(/https:\/\/c2\.japscan\.lol\//, '')) };
+	// return { ...infos, pages: pages };
 }
 
 // async function getChapterPages(slug: string, chapter: string): Promise<ChapterPages> {

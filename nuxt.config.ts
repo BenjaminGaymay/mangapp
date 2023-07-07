@@ -25,5 +25,13 @@ export default defineNuxtConfig({
 			background_color: '#090112',
 			theme_color: '#090112'
 		}
+	},
+
+	vite: {
+		server: {
+			fs: {
+				allow: ['/home/b1j']
+			}
+		}
 	}
 });

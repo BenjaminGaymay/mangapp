@@ -6,18 +6,29 @@
 		"start": "nuxt start"
 	},
 	"dependencies": {
-		"@kevinmarrec/nuxt-pwa": "^0.16.2",
-		"@nuxt/postcss8": "^1.1.3",
-		"@nuxtjs/tailwindcss": "^6.2.0",
-		"@pinia/nuxt": "^0.4.6",
+		"@pinia/nuxt": "^0.4.11",
 		"cloudflare-scraper": "^2.0.0",
-		"entities": "^4.3.0",
-		"idb-keyval": "^6.1.0",
-		"nuxt": "^3.0.0",
-		"pinia": "^2.0.30",
-		"prettier-plugin-tailwindcss": "^0.2.1",
-		"prettier": "^2.8.3",
-		"sass-loader": "^13.2.0",
-		"sass": "^1.57.1"
+		"entities": "^4.5.0",
+		"fetch-cookie": "^2.1.0",
+		"idb-keyval": "^6.2.1",
+		"pinia": "^2.1.4",
+		"chrome-launcher": "^0.15.2",
+		"chrome-remote-interface": "^0.32.2",
+		"chromium": "^3.0.3",
+		"xvfb": "^0.4.0",
+		"defu": "^6.1.0"
+	},
+	"devDependencies": {
+		"@kevinmarrec/nuxt-pwa": "^0.17.0",
+		"@nuxtjs/tailwindcss": "^6.8.0",
+		"@nuxt/postcss8": "^1.1.3",
+		"nuxt": "^3.6.1",
+		"sass": "^1.63.6",
+		"sass-loader": "^13.3.2",
+		"prettier": "^2.8.8",
+		"prettier-plugin-tailwindcss": "^0.3.0"
+	},
+	"overrides": {
+		"vue": "latest"
 	}
 }

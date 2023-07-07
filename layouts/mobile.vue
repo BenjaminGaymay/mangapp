@@ -1,31 +1,32 @@
 <template>
-	<div class="h-screen w-screen text-white font-sm antialiased flex flex-col" style="background-color: #090112">
+	<div class="font-sm flex h-screen w-screen flex-col text-white antialiased" style="background-color: #090112">
 		<div class="gradient fixed w-screen" :class="gradientPosition"></div>
 
 		<div v-if="status" class="notification">Téléchargement {{ status }}</div>
 
-		<main class="flex-grow w-full pb-2 z-10 overflow-auto max-w-xl mx-auto">
+		<main class="z-10 mx-auto w-full max-w-xl flex-grow overflow-auto pb-2">
 			<slot />
 		</main>
 
 		<div class="navbar z-10 rounded-t-2xl">
 			<slot name="nav">
-				<nav class="grid grid-cols-4 items-center">
+				<!-- <nav class="grid grid-cols-4 items-center"> -->
+				<nav class="grid grid-cols-3 items-center">
 					<NuxtLink to="/">
-						<div class="h-14 flex items-center">
+						<div class="flex h-14 items-center">
 							<img v-if="selected === 'home'" src="~/assets/svg/circle/plain.svg" class="selected" />
 							<img v-else src="~/assets/svg/circle/line.svg" />
 						</div>
 					</NuxtLink>
 
 					<NuxtLink to="/favoris">
-						<div class="h-14 flex items-center">
+						<div class="flex h-14 items-center">
 							<img v-if="selected === 'favorite'" src="~/assets/svg/heart/plain.svg" class="selected" />
 							<img v-else src="~/assets/svg/heart/line.svg" />
 						</div>
 					</NuxtLink>
 
-					<NuxtLink to="/telechargements">
+					<!-- <NuxtLink to="/telechargements">
 						<div class="h-14 flex items-center">
 							<img
 								v-if="selected === 'download'"
@@ -34,10 +35,10 @@
 							/>
 							<img v-else src="~/assets/svg/download/line.svg" />
 						</div>
-					</NuxtLink>
+					</NuxtLink> -->
 
 					<NuxtLink to="/recherche">
-						<div class="h-14 flex items-center">
+						<div class="flex h-14 items-center">
 							<img v-if="selected === 'search'" src="~/assets/svg/search/plain.svg" class="selected" />
 							<img v-else src="~/assets/svg/search/line.svg" />
 						</div>
@@ -99,7 +100,7 @@ onMounted(refreshAll);
 
 <style lang="scss" scoped>
 .notification {
-	@apply text-sm py-0.5 rounded-md mt-1;
+	@apply mt-1 rounded-md py-0.5 text-sm;
 	text-align: center;
 	width: calc(100% - 2rem);
 	margin-inline: 1rem;
