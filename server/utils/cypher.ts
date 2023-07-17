@@ -1,8 +1,8 @@
 // import { rImgUri } from './regex/chapter';
 // import { fetchFirstPage } from '../api/manga/[slug]/[chapter]';
 
-const first_key = 'Yb4FAl8CqaKeMc0dIEJG1SpBRDWjvw7LNHomf62Ty3O9ZXzuQtikshnUPVr5gx';
-const second_key = 'U73RVdmeJuCPtNBS5n1D48GbxhkavMKOELpzojFcfYQyrTAl0HigwWsZ9qXI62';
+const first_key = 'fhmjF6y4lBM1suO9piUcqDH2oagvEk8nxwRrLPWCZN5AJ7dYQVGbtIXSz03TeK';
+const second_key = 'guYa7WlQ2M3G5viZIBzmpnrL86EOFRCkNJXqdAhHc1bTxUoSPywsD0VjtKfe49';
 
 export function decodeCypher(cypher: string) {
 	// console.log(cypher);
