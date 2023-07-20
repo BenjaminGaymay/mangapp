@@ -20,7 +20,7 @@ async function getChapterPages(slug: string, chapter: string): Promise<ChapterPa
 	const page: string = await fetchFirstPage(slug, chapter);
 
 	const [, cypher] = page.match(/<i id="data" data-data="(.+?)"/) || [null, ''];
-	const { imagesLink: pages } = decodeCypher(cypher);
+	const { imagesLink: pages } = await decodeCypher(cypher);
 
 	const [, name]: string[] = page.match(chapterName) || [];
 

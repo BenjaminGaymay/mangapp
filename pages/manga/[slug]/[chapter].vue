@@ -52,8 +52,20 @@
 					</nav>
 				</transition>
 
-				<div v-for="(page, i) in chapter.pages">
-					<img v-if="visible >= i" :src="`/api/image/chapter/${page}`" :data-index="i + 1" class="mx-auto" />
+				<template v-if="chapter.pages.length > 0">
+					<div v-for="(page, i) in chapter.pages">
+						<img
+							v-if="visible >= i"
+							:src="`/api/image/chapter/${page}`"
+							:data-index="i + 1"
+							class="mx-auto"
+						/>
+					</div>
+				</template>
+
+				<div v-else class="error-img text-center">
+					<div>Erreur lors du déchiffrement des images</div>
+					<div>Veuillez contacter un administrateur</div>
 				</div>
 
 				<div class="px-2 py-4" v-if="chapter.next && visible >= chapter.pages.length">
@@ -212,5 +224,14 @@ nav {
 
 .next {
 	background: rgba(255, 255, 255, 0.2);
+}
+
+.error-img {
+	background-color: #090112;
+	height: calc(100% - 4.5rem);
+	display: grid;
+	place-content: center;
+
+	color: white;
 }
 </style>
