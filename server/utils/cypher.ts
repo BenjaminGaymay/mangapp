@@ -2,7 +2,7 @@
 // import { fetchFirstPage } from '../api/manga/[slug]/[chapter]';
 
 import { fetchFirstPage } from '../api/manga/[slug]/[chapter]';
-import { decoded } from './decoded';
+import { kingdom761 } from './decoded';
 
 // let first_key 'eo9G6qTb5yYKhIxLmSld8z7M31HkcvjunDVNOQCiFtWPprawBg4EJXs2f0UZRA' as string | null;
 // let second_key = 'N6ktHuiPC93jvUJx1nlwIf8bdsZX5KGqyLeSQraW4mgRz02ABpF7OYTDMEVcho' as string | null;
@@ -39,7 +39,7 @@ export async function decodeCypher(cypher: string, retry = true) {
 }
 
 async function getReferencePage() {
-	const page: string = await fetchFirstPage('dragon-ball', 'volume-1');
+	const page: string = await fetchFirstPage('kingdom', '761');
 	const [, cypher] = page.match(/<i id="data" data-data="(.+?)"/) || [null, ''];
 
 	return cypher;
@@ -47,6 +47,7 @@ async function getReferencePage() {
 
 async function findCypher() {
 	const cypher = await getReferencePage();
+	const decoded = kingdom761;
 
 	let first = '';
 	let second = '';
