@@ -8,9 +8,8 @@ let fetchReferenceError = false;
 
 export async function decodeCypher(cypher: string, retry = true) {
 	try {
-
 		if (!first_key || !second_key) await findCypher();
-		if (!first_key || !second_key) return { imagesLink: [] };
+		if (!first_key || !second_key) return { imagesLink: [] as string[] };
 
 		const b64 = cypher.replace(/[A-Z0-9]/gi, char => first_key![second_key!.indexOf(char)]);
 		const ascii = Buffer.from(b64, 'base64')
@@ -18,9 +17,9 @@ export async function decodeCypher(cypher: string, retry = true) {
 			.replace(/[^\w\d :/".,{}\[\]]/g, '');
 
 		const pages = ascii.match(/\[.+\]/);
-		if (!pages || !pages?.at(0)) return { imagesLink: [] };
+		if (!pages || !pages?.at(0)) return { imagesLink: [] as string[] };
 
-		return { imagesLink: JSON.parse(pages[0]) };
+		return { imagesLink: JSON.parse(pages[0]) as string[] };
 	} catch (e: any) {
 		console.error('error: decode:', e);
 
@@ -31,7 +30,7 @@ export async function decodeCypher(cypher: string, retry = true) {
 			return decodeCypher(cypher, false);
 		}
 
-		return { imagesLink: [] };
+		return { imagesLink: [] as string[] };
 	}
 }
 
@@ -46,11 +45,10 @@ async function findCypher() {
 	if (fetchReferenceError) return;
 
 	try {
-
 		const cypher = await getReferencePage();
 		const decoded = kingdom761;
 
-		fetchReferenceError = false
+		fetchReferenceError = false;
 
 		let first = '';
 		let second = '';
@@ -65,7 +63,7 @@ async function findCypher() {
 		second_key = second;
 	} catch (e) {
 		console.error('error: findCypher:', e);
-		fetchReferenceError = true
+		fetchReferenceError = true;
 		setTimeout(() => (fetchReferenceError = false), 1000 * 60 * 5);
 	}
 }
