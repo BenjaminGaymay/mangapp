@@ -8,7 +8,7 @@ import cloudscraper from 'cloudflare-scraper';
 
 export async function fetchFirstPage(slug: string, chapter: string): Promise<string> {
 	const response = await cloudscraper.get(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`, {
-		timeout: { request: 60000 }
+		timeout: { request: 30000 }
 	});
 
 	return clearString(response.body);
