@@ -73,7 +73,7 @@ export async function getWeeklyTrends(): Promise<Trends[]> {
 }
 
 async function fetchHomePage(): Promise<string> {
-	const response = await cloudscraper.get('https://www.japscan.lol', { timeout: { request: 60000 } });
+	const response = await cloudscraper.get('https://www.japscan.lol');
 	return clearString(response.body);
 }
 

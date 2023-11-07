@@ -3,11 +3,13 @@ import cloudscraper from 'cloudflare-scraper';
 export default defineEventHandler(async (event): Promise<any> => {
 	const slug: string = event.context.params?.slug || '';
 
-	const response = await cloudscraper.get(`https://japscan.lol/imgs/mangas/${slug}.jpg`, {
-		timeout: { request: 60000 }
-	});
+	try {
+		const response = await cloudscraper.get(`https://japscan.lol/imgs/mangas/${slug}.jpg`);
 
-	if (!response) return null;
-
-	return response.rawBody;
+		if (!response) return null;
+		return response.rawBody;
+	} catch (e: any) {
+		console.error('error: getImage:', e?.message || e?.stack || e);
+		return null;
+	}
 });

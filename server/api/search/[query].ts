@@ -5,7 +5,6 @@ async function searchManga(query: string): Promise<QueryResult[]> {
 	params.append('search', query);
 
 	const response = await cloudscraper.post('https://www.japscan.lol/live-search/', {
-		timeout: { request: 60000 },
 		body: params.toString(),
 		headers: {
 			'X-Requested-With': 'XMLHttpRequest',
@@ -18,9 +17,13 @@ async function searchManga(query: string): Promise<QueryResult[]> {
 	return data.map(({ name, url }) => ({ name, url, slug: url.split('/')[2] }));
 }
 
-export default defineEventHandler(async (event): Promise<QueryResult[]> => {
+export default defineEventHandler(async (event): Promise<QueryResult[] | undefined> => {
 	const query: string = event.context.params?.query || '';
 	const normalized: string = query.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 
-	return searchManga(normalized);
+	try {
+		return await searchManga(normalized);
+	} catch (e: any) {
+		console.error('error: searchManga:', e?.message || e?.stack || e);
+	}
 });

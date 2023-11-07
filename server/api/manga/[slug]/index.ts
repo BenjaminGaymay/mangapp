@@ -5,9 +5,14 @@ import cloudscraper from 'cloudflare-scraper';
 // import { clearString } from '~~/server/utils/string';
 
 async function fetchMangaPage(slug: string): Promise<string> {
+	const abortController = new AbortController();
+	const timeout = setTimeout(() => abortController.abort(), 25000);
+
 	const response = await cloudscraper.get(`https://www.japscan.lol/manga/${slug}/`, {
-		timeout: { request: 60000 }
+		signal: abortController.signal
 	});
+
+	clearTimeout(timeout);
 	return clearString(response.body);
 }
 
@@ -49,8 +54,12 @@ async function getMangaData(slug: string): Promise<Manga> {
 	return { ...data, chapters: parsed };
 }
 
-export default defineEventHandler(async (event): Promise<Manga> => {
+export default defineEventHandler(async (event): Promise<Manga | undefined> => {
 	const slug: string = event.context.params?.slug || '';
 
-	return getMangaData(slug);
+	try {
+		return await getMangaData(slug);
+	} catch (e: any) {
+		console.error('error: getMangaData:', e?.message || e?.stack || e);
+	}
 });

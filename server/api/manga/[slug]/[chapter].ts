@@ -7,10 +7,14 @@ import cloudscraper from 'cloudflare-scraper';
 // import { clearString } from '~~/server/utils/string';
 
 export async function fetchFirstPage(slug: string, chapter: string): Promise<string> {
+	const abortController = new AbortController();
+	const timeout = setTimeout(() => abortController.abort(), 25000);
+
 	const response = await cloudscraper.get(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`, {
-		timeout: { request: 30000 }
+		signal: abortController.signal
 	});
 
+	clearTimeout(timeout);
 	return clearString(response.body);
 	// const response = await fetchURL(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`);
 	// return clearString(response);
@@ -95,11 +99,15 @@ async function getChapterPages(slug: string, chapter: string): Promise<ChapterPa
 // 	return oUri === fUri;
 // }
 
-export default defineEventHandler(async (event): Promise<ChapterPages> => {
+export default defineEventHandler(async (event): Promise<ChapterPages | undefined> => {
 	const slug: string = event.context.params?.slug || '';
 	const chapter: string = event.context.params?.chapter || '';
 
-	return getChapterPages(slug, chapter);
+	try {
+		return await getChapterPages(slug, chapter);
+	} catch (e: any) {
+		console.error('error: getChapterPages:', e?.message || e?.stack || e);
+	}
 });
 
 // getDecodeCypherObject();

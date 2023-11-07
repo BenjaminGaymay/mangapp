@@ -5,7 +5,6 @@ export default defineEventHandler(async (event): Promise<any> => {
 	const url: string = event.context.params?.url || '';
 
 	const response = await cloudscraper.get(url.startsWith('https') ? url : `https://c3.japscan.lol/${url}`, {
-		timeout: { request: 10000 },
 		headers: { referer: 'https://www.japscan.lol/' }
 	});
 	// const userAgent = await browser.getUserAgent();
