@@ -8,7 +8,7 @@ import cloudscraper from 'cloudflare-scraper';
 
 export async function fetchFirstPage(slug: string, chapter: string): Promise<string> {
 	const abortController = new AbortController();
-	const timeout = setTimeout(() => abortController.abort(), 25000);
+	const timeout = setTimeout(() => abortController.abort(), 5000);
 
 	const response = await cloudscraper.get(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`, {
 		signal: abortController.signal

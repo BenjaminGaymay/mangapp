@@ -13,7 +13,15 @@
 			@scroll="handleScroll"
 			class="relative h-screen overflow-auto"
 		>
-			<UiLoader v-if="pending || !Boolean(chapter)" />
+			<UiLoader v-if="pending" />
+
+			<template v-else-if="!Boolean(chapter)">
+				<div class="error-img text-center">
+					<div>Erreur lors du chargement du chapitre</div>
+					<div>Veuillez contacter un administrateur</div>
+				</div>
+			</template>
+
 			<template v-else>
 				<transition name="slide">
 					<nav v-if="navigation" @click.stop class="top-0">

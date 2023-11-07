@@ -3,7 +3,7 @@
 	"scripts": {
 		"build": "nuxt build",
 		"dev": "nuxt dev",
-		"start": "nuxt start"
+		"start": "node .output/server/index.mjs"
 	},
 	"dependencies": {
 		"@pinia/nuxt": "^0.5.1",
