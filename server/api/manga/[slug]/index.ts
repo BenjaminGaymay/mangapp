@@ -5,14 +5,14 @@ import cloudscraper from 'cloudflare-scraper';
 // import { clearString } from '~~/server/utils/string';
 
 async function fetchMangaPage(slug: string): Promise<string> {
-	const abortController = new AbortController();
-	const timeout = setTimeout(() => abortController.abort(), 25000);
+	// const abortController = new AbortController();
+	// const timeout = setTimeout(() => abortController.abort(), 25000);
 
 	const response = await cloudscraper.get(`https://www.japscan.lol/manga/${slug}/`, {
-		signal: abortController.signal
+		// signal: abortController.signal
 	});
 
-	clearTimeout(timeout);
+	// clearTimeout(timeout);
 	return clearString(response.body);
 }
 

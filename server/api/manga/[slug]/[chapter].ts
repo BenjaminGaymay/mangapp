@@ -7,14 +7,18 @@ import cloudscraper from 'cloudflare-scraper';
 // import { clearString } from '~~/server/utils/string';
 
 export async function fetchFirstPage(slug: string, chapter: string): Promise<string> {
-	const abortController = new AbortController();
-	const timeout = setTimeout(() => abortController.abort(), 60000);
+	// const abortController = new AbortController();
+	// const timeout = setTimeout(() => abortController.abort(), 60000);
 
 	const response = await cloudscraper.get(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`, {
-		signal: abortController.signal
+		// timeout: {
+		// 	request: 600000
+		// },
+		// retry: { limit: 0 }
+		// signal: abortController.signal
 	});
 
-	clearTimeout(timeout);
+	// clearTimeout(timeout);
 	return clearString(response.body);
 	// const response = await fetchURL(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`);
 	// return clearString(response);
