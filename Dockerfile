@@ -1,4 +1,4 @@
-FROM node:18-alpine as version
+FROM node:20-alpine3.18 as version
 
 WORKDIR /mangas
 
@@ -11,7 +11,7 @@ RUN node -e "['./package.json','./package-lock.json'].forEach(n => {  \
   });"
 
 
-FROM node:18-alpine as build
+FROM node:20-alpine3.18 as build
 
 WORKDIR /mangas
 
