@@ -49,6 +49,7 @@ async function findCypher() {
 		const decoded = kingdom761;
 
 		fetchReferenceError = false;
+		// console.log(cypher.length, decoded.length);
 
 		let first = '';
 		let second = '';
