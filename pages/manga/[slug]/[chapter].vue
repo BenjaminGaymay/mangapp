@@ -62,12 +62,27 @@
 
 				<template v-if="chapter.pages.length > 0">
 					<div v-for="(page, i) in chapter.pages">
-						<img
-							v-if="visible >= i"
-							:src="`/api/image/chapter/${page}`"
-							:data-index="i + 1"
-							class="mx-auto"
-						/>
+						<template v-if="visible >= i">
+							<div v-if="indexOnError.has(i)" class="reload-img" @click="indexOnError.delete(i)">
+								Erreur de chargement de l'image
+								<div>Cliquez pour réessayer</div>
+							</div>
+
+							<template v-else>
+								<img
+									v-show="indexIsLoaded.has(i)"
+									:src="`/api/image/chapter/${page}`"
+									:data-index="i + 1"
+									@error="indexOnError.add(i)"
+									@load="indexIsLoaded.add(i)"
+									class="mx-auto"
+								/>
+
+								<div v-show="!indexIsLoaded.has(i)" class="reload-img relative">
+									<UiLoader />
+								</div>
+							</template>
+						</template>
 					</div>
 				</template>
 
@@ -184,18 +199,21 @@ function scrollToSavedPage() {
 	}, 100);
 }
 
-useHead({
-	// @ts-ignore
-	link: computed(() => {
-		if (!chapter.value || !chapter.value.pages) return [];
+// useHead({
+// 	// @ts-ignore
+// 	link: computed(() => {
+// 		if (!chapter.value || !chapter.value.pages) return [];
 
-		return chapter.value.pages.slice(0, current.value + 3).map(page => ({
-			rel: 'preload',
-			as: 'image',
-			href: `/api/image/chapter/${page}`
-		}));
-	})
-});
+// 		return chapter.value.pages.slice(0, current.value + 3).map(page => ({
+// 			rel: 'preload',
+// 			as: 'image',
+// 			href: `/api/image/chapter/${page}`
+// 		}));
+// 	})
+// });
+
+const indexOnError = ref(new Set<number>());
+const indexIsLoaded = ref(new Set<number>());
 </script>
 
 <style lang="scss" scoped>
@@ -241,5 +259,21 @@ nav {
 	place-content: center;
 
 	color: white;
+}
+
+.reload-img {
+	background-color: #090112;
+
+	margin-inline: auto;
+	text-align: center;
+
+	height: 75vh;
+
+	display: grid;
+	place-content: center;
+
+	box-shadow: inset 1px 0px 200px 0px rgba(0, 0, 0, 0.2);
+	border-radius: 2rem;
+	margin-block: 0.5rem;
 }
 </style>

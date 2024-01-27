@@ -1,12 +1,27 @@
 import cloudscraper from 'cloudflare-scraper';
 // import { browser } from '~/server/utils/scraper';
 
+let locked = false;
+
 export default defineEventHandler(async (event): Promise<any> => {
 	const url: string = event.context.params?.url || '';
 
+	let tries = 0;
+	while (locked) {
+		await new Promise(resolve => setTimeout(resolve, 1000));
+
+		tries += 1;
+
+		if (tries > 10) return null;
+	}
+
+	locked = true;
 	const response = await cloudscraper.get(url.startsWith('https') ? url : `https://c3.japscan.lol/${url}`, {
 		headers: { referer: 'https://www.japscan.lol/' }
 	});
+
+	locked = false;
+
 	// const userAgent = await browser.getUserAgent();
 	// const clearance = (await browser.getCookies()).find(e => e.name === 'cf_clearance');
 
