@@ -38,10 +38,10 @@ const idb = useIdb();
 const { data: wData } = useLazyFetch<HomeManga[]>('/api/home/week');
 
 const updated = ref<string[]>([]);
-watch(() => [idb.loading, wData, fav.refreshing], buildUpdatedArray, { immediate: true });
+watch(() => [idb.loading, wData.value, fav.refreshing], buildUpdatedArray, { immediate: true });
 
 async function buildUpdatedArray() {
-	if (idb.loading || !wData?.value || fav.refreshing) return;
+	if (idb.loading || !wData.value || fav.refreshing) return;
 
 	for (const manga of fav.list) {
 		if (await hasBeenUpdated(manga.slug)) updated.value.push(manga.slug);
