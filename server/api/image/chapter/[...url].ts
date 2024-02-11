@@ -16,7 +16,8 @@ export default defineEventHandler(async (event): Promise<any> => {
 	}
 
 	locked = true;
-	const response = await cloudscraper.get(url.startsWith('https') ? url : `https://c3.japscan.lol/${url}`, {
+	const fixedUrl = url.startsWith('https:') ? url : `https:${url.replace(/^https/, '')}`;
+	const response = await cloudscraper.get(fixedUrl, {
 		headers: { referer: 'https://www.japscan.lol/' }
 	});
 

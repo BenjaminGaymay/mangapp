@@ -1,4 +1,5 @@
 import { fetchFirstPage } from '../api/manga/[slug]/[chapter]';
+import { isValid, BASE, b64 } from './decoded';
 
 let first_key = null as string | null;
 let second_key = null as string | null;
@@ -9,9 +10,6 @@ export async function decodeCypher(cypher: string, retry = true) {
 	try {
 		if (!first_key || !second_key) await findCypher();
 		if (!first_key || !second_key) return { imagesLink: [] as string[] };
-
-		console.log('first_key:', first_key);
-		console.log('second_key:', second_key);
 
 		const b64 = cypher.replace(/[A-Z0-9]/gi, char => first_key![second_key!.indexOf(char)]);
 		const ascii = Buffer.from(b64, 'base64')
@@ -46,18 +44,12 @@ async function getReferencePage() {
 	return cypher;
 }
 
-const BASE =
-	'eyJudW1iZXIiOjE3LCJ1cmkiOiJcL2xlY3R1cmUtZW4tbGlnbmVcLzEwMC0wMDAtbGV2ZWxzLW9mLWJvZHktcmVmaW5pbmctYWxsLXRoZS1kb2dzLWktcmFpc2UtYXJlLXRoZS1lbXBlcm9yXC8xN1wvIiwibWFuZ2FTbHVnIjoiMTAwLTAwMC1sZXZlbHMtb2YtYm9keS1yZWZpbmluZy1hbGwtdGhlLWRvZ3MtaS1yYWlzZS1hcmUtdGhlLWVtcGVyb3IiLCJpbWFnZXNMaW5rIjpb';
-
-const b64 = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-
 async function findCypher() {
 	if (fetchReferenceError) return;
 
 	try {
 		const cypher = await getReferencePage();
 		if (!cypher) throw new Error('No cypher found');
-		console.log('cypher:', cypher);
 
 		fetchReferenceError = false;
 
@@ -75,11 +67,10 @@ async function findCypher() {
 		const missing_first = findMissing(first);
 		second_key = second + findMissing(second);
 
-		const combinations = listPossibilities(missing_first);
-		for (const try_order of combinations) {
-			if (!isValid(cypher, first + try_order, second_key)) continue;
+		const combinations = permutations(missing_first).filter(order => isValid(cypher, first + order, second_key!));
 
-			first_key = first + try_order;
+		if (combinations.length > 0) {
+			first_key = first + combinations[0];
 			return;
 		}
 
@@ -100,33 +91,49 @@ function findMissing(str: string) {
 	return missing;
 }
 
-function isValid(cypher: string, first_key: string, second_key: string) {
-	const b64 = cypher.replace(/[A-Z0-9]/gi, char => first_key[second_key.indexOf(char)]);
-	const ascii = Buffer.from(b64, 'base64')
-		.toString('ascii')
-		.replace(/[^\w\d :/".,{}\[\]]/g, '');
+function permutations(array: string) {
+	const n = array.length;
+	let r = n;
 
-	const pages = ascii.match(/\[.+\]/);
-	if (!pages || !pages?.at(0)) return false;
+	let indices = [];
+	for (let i = 0; i < n; i++) indices.push(i);
 
-	try {
-		const _ = JSON.parse(pages[0]);
-		return true;
-	} catch (e) {
-		return false;
-	}
-}
+	const cycles = [];
+	for (let i = n; i > n - r; i--) cycles.push(i);
 
-function listPossibilities(missing: string) {
-	const possibilities = [];
-	for (let i = 0; i < missing.length; i++) {
-		for (let j = i + 1; j < missing.length; j++) {
-			const temp = missing.split('');
-			[temp[i], temp[j]] = [temp[j], temp[i]];
+	const results = [];
+	let res = [];
+	for (let k = 0; k < r; k++) res.push(array[indices[k]]);
 
-			possibilities.push(temp.join(''));
+	results.push(res);
+
+	let broken = false;
+	while (n > 0) {
+		for (let i = r - 1; i >= 0; i--) {
+			cycles[i]--;
+
+			if (cycles[i] === 0) {
+				indices = indices.slice(0, i).concat(indices.slice(i + 1).concat(indices.slice(i, i + 1)));
+				cycles[i] = n - i;
+				broken = false;
+			} else {
+				const j = cycles[i];
+				const x = indices[i];
+
+				indices[i] = indices[n - j];
+				indices[n - j] = x;
+
+				let res = [];
+				for (let k = 0; k < r; k++) res.push(array[indices[k]]);
+
+				results.push(res);
+				broken = true;
+				break;
+			}
 		}
+
+		if (broken === false) break;
 	}
 
-	return possibilities;
+	return results.map(e => e.join(''));
 }
