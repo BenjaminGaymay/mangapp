@@ -21,7 +21,7 @@ ENV NODE_CHROMIUM_SKIP_INSTALL=true
 ENV CHROME_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 COPY --chown=node:node --from=version /mangas/package.json /mangas/package-lock.json ./
-RUN npm i
+RUN npm i --legacy-peer-deps
 RUN npm cache clean --force
 
 COPY --chown=node:node . .
