@@ -11,9 +11,9 @@ export async function fetchFirstPage(slug: string, chapter: string): Promise<str
 	// const timeout = setTimeout(() => abortController.abort(), 60000);
 
 	const response = await cloudscraper.get(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`, {
-		// timeout: {
-		// 	request: 600000
-		// },
+		timeout: {
+			request: 600000
+		}
 		// retry: { limit: 0 }
 		// signal: abortController.signal
 	});

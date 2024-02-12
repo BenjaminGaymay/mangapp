@@ -72,6 +72,8 @@ function isValid(first_key, second_key) {
 	const ascii = Buffer.from(b64, 'base64').toString('ascii');
 	// .replace(/[^\w\d :/".,{}\[\]]/g, '');
 
+	if (!ascii.endsWith('"],"allInOne":true}')) return false;
+
 	const pages = ascii.match(/\[.+\]/);
 	if (!pages || !pages?.at(0)) return false;
 
@@ -96,7 +98,7 @@ function isValid(first_key, second_key) {
 
 const { first_key, second_key } = findCypher();
 const decoded = CYPHER.replace(/[A-Z0-9]/gi, char => first_key[second_key.indexOf(char)]);
-console.log(Buffer.from(decoded, 'base64').toString('ascii'));
+// console.log(Buffer.from(decoded, 'base64').toString('ascii'));
 
 // bpjIr5WaMNXZnFJCLi3yVGctlhdUm1SzYvRwuek92HsATox8BD0E4OgfqKPQ67;
 // aCpcmySkfGOjLFRBJqHYEIhZ58QT9W7x63KeAzsV0DNguon2rUXvbPdiltwM14;

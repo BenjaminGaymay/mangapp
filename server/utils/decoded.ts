@@ -25,6 +25,8 @@ export function isValid(cypher: string, first_key: string, second_key: string) {
 
 	const ascii = Buffer.from(b64, 'base64').toString('ascii');
 
+	if (!ascii.endsWith('"],"allInOne":true}')) return false;
+
 	const pages = ascii.match(/\[.+\]/);
 	if (!pages || !pages?.at(0)) return false;
 
