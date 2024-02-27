@@ -34,40 +34,57 @@ export async function decodeCypher(cypher: string, retry = true) {
 	}
 }
 
-async function getReferencePage() {
+async function getReferencesPage() {
 	const page: string = await fetchFirstPage(
 		'100-000-levels-of-body-refining-all-the-dogs-i-raise-are-the-emperor',
 		'17'
 	);
 	const [, cypher] = page.match(/<i id="data" data-data="(.+?)"/) || [null, ''];
 
-	return cypher;
+	const page2: string = await fetchFirstPage('one-piece', '1094');
+	const [, cypher2] = page2.match(/<i id="data" data-data="(.+?)"/) || [null, ''];
+
+	return { '100-000-levels': cypher, 'one-piece': cypher2 };
 }
 
 async function findCypher() {
 	if (fetchReferenceError) return;
 
 	try {
-		const cypher = await getReferencePage();
-		if (!cypher) throw new Error('No cypher found');
+		const cyphers = await getReferencesPage();
+		if (!cyphers) throw new Error('No cypher found');
 
 		fetchReferenceError = false;
 
 		let first = '';
 		let second = '';
 
-		const slice = cypher.slice(0, BASE.length);
+		const slice = cyphers['100-000-levels'].slice(0, BASE['100-000-levels'].length);
 		for (let i = slice.length - 1; i >= 0; i--) {
 			if (second.includes(slice[i])) continue;
 
-			first += BASE[i];
+			first += BASE['100-000-levels'][i];
 			second += slice[i];
+		}
+
+		const slice2 = cyphers['one-piece'].slice(0, BASE['one-piece'].length);
+		for (let i = slice2.length - 1; i >= 0; i--) {
+			if (second.includes(slice2[i])) continue;
+
+			first += BASE['one-piece'][i];
+			second += slice2[i];
 		}
 
 		const missing_first = findMissing(first);
 		second_key = second + findMissing(second);
 
-		const combinations = permutations(missing_first).filter(order => isValid(cypher, first + order, second_key!));
+		console.log({ missing_first });
+
+		const combinations = permutations(missing_first).filter(
+			order =>
+				isValid(cyphers['100-000-levels'], '100-000-levels', first + order, second_key!) &&
+				isValid(cyphers['one-piece'], 'one-piece', first + order, second_key!)
+		);
 
 		if (combinations.length > 0) {
 			first_key = first + combinations[0];
