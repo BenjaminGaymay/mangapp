@@ -78,8 +78,6 @@ async function findCypher() {
 		const missing_first = findMissing(first);
 		second_key = second + findMissing(second);
 
-		console.log({ missing_first });
-
 		const combinations = permutations(missing_first).filter(
 			order =>
 				isValid(cyphers['100-000-levels'], '100-000-levels', first + order, second_key!) &&
