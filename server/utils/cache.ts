@@ -105,7 +105,7 @@ function parseDailyManga(mangaList: RegExpMatchArray[]): HomeManga[] {
 		return {
 			slug: regexed.match(/<a href="\/manga\/(.+?)\/?"/)?.at(1) || '',
 			name: regexed.match(/title="(.+?)"/)?.at(1) || '',
-			isHot: regexed.includes('fa-fire-flame') || undefined,
+			isHot: regexed.includes('Top') || undefined,
 			chapters: parseMangaChapters(regexed.split('<div class="col-md-5">')[2])
 		};
 	});
@@ -136,7 +136,6 @@ function parseTrends(text: string): Trends[] {
 
 function updateMangaCache(update: HomeManga[][]) {
 	MangaCache = update;
-	// console.log(update);
 
 	setTimeout(() => (MangaCache = null), 180000);
 }

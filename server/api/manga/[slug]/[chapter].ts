@@ -12,7 +12,8 @@ export async function fetchFirstPage(slug: string, chapter: string): Promise<str
 
 	const response = await cloudscraper.get(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`, {
 		timeout: {
-			request: 600000
+			request: 600000,
+			response: 600000
 		}
 		// retry: { limit: 0 }
 		// signal: abortController.signal
@@ -33,6 +34,8 @@ const exclude = [
 
 async function getChapterPages(slug: string, chapter: string): Promise<ChapterPages> {
 	const page: string = await fetchFirstPage(slug, chapter);
+
+	console.log(page);
 
 	const [, cypher] = page.match(/<i id="data" data-data="(.+?)"/) || [null, ''];
 	const { imagesLink: pages } = await decodeCypher(cypher);

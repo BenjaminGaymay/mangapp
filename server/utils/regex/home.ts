@@ -32,4 +32,4 @@ export const homeChapterName: RegExp = new RegExp('VF: (.*)(Attention:)?');
 export const homeChapterNumber: RegExp = new RegExp('/((volume-)?([0-9]|\\.)+)/$');
 
 export const homeTrendGroup: RegExp = new RegExp('<ol class="rectangle-list rounded-0 list-group".+?</ol', 'g');
-export const homeTrend: RegExp = new RegExp('<a.*?href="/manga/(.+?)/">(.+?)</a>', 'g');
+export const homeTrend: RegExp = new RegExp('<a class="sideTitle text-dark" href="/manga/(.+?)/" title="(.+?)"', 'g');
