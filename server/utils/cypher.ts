@@ -39,10 +39,10 @@ async function getReferencesPage() {
 		'100-000-levels-of-body-refining-all-the-dogs-i-raise-are-the-emperor',
 		'17'
 	);
-	const [, cypher] = page.match(/<i id="data" data-data="(.+?)"/) || [null, ''];
+	const [, cypher] = page.match(/<i.+?data-atad="(.+?)"/) || [null, ''];
 
 	const page2: string = await fetchFirstPage('one-piece', '1094');
-	const [, cypher2] = page2.match(/<i id="data" data-data="(.+?)"/) || [null, ''];
+	const [, cypher2] = page2.match(/<i.+?data-atad="(.+?)"/) || [null, ''];
 
 	return { '100-000-levels': cypher, 'one-piece': cypher2 };
 }

@@ -1,17 +1,3 @@
-import cloudscraper from 'cloudflare-scraper';
-
-// import { clearString } from '~~/server/utils/string';
-// import {
-// 	homeManga,
-// 	homeChapters,
-// 	homeV1,
-// 	homeV2,
-// 	homeChapterName,
-// 	homeChapterNumber,
-// 	homeTrend,
-// 	homeTrendGroup
-// } from '~/server/utils/regex/home';
-
 let MangaCache: HomeManga[][] | null = null;
 let TrendsCache: Trends[] | null = null;
 
@@ -73,8 +59,11 @@ export async function getWeeklyTrends(): Promise<Trends[]> {
 }
 
 async function fetchHomePage(): Promise<string> {
-	const response = await cloudscraper.get('https://www.japscan.lol');
-	return clearString(response.body);
+	const response = await fetch('https://www.japscan.lol');
+	if (!response.ok) throw 'request failed';
+
+	const text = await response.text();
+	return clearString(text);
 }
 
 function parseHomePage(text: string): HomeManga[][] {
@@ -96,11 +85,6 @@ function findDailyManga(day: string): RegExpMatchArray[] {
 function parseDailyManga(mangaList: RegExpMatchArray[]): HomeManga[] {
 	return mangaList.map(manga => {
 		const [regexed] = manga;
-		// console.log(manga.includes('fa-fire-flame'));
-
-		// const [manga, slug, name]: string[] = m;
-
-		// console.log(slug, name, manga);
 
 		return {
 			slug: regexed.match(/<a href="\/manga\/(.+?)\/?"/)?.at(1) || '',
@@ -113,7 +97,6 @@ function parseDailyManga(mangaList: RegExpMatchArray[]): HomeManga[] {
 
 function parseMangaChapters(manga: string): Chapter[] {
 	return [...manga.matchAll(homeChapters)].map(([, href, cName, , , infos]) => {
-		// const [, name]: string[] = cName.match(homeChapterName) || [];
 		const [, number]: string[] = href.match(homeChapterNumber) || [];
 		const isVolume: boolean = number.includes('volume');
 
@@ -122,7 +105,7 @@ function parseMangaChapters(manga: string): Chapter[] {
 			name: cName,
 			number: parseFloat(number.replace('volume-', '')),
 			isVolume,
-			infos: undefined // infos?.length > 10 ? undefined : infos
+			infos: undefined
 		};
 	});
 }

@@ -1,6 +1,3 @@
-import cloudscraper from 'cloudflare-scraper';
-// import { browser } from '~/server/utils/scraper';
-
 let locked = false;
 
 export default defineEventHandler(async (event): Promise<any> => {
@@ -17,27 +14,20 @@ export default defineEventHandler(async (event): Promise<any> => {
 
 	locked = true;
 	const fixedUrl = url.startsWith('https:') ? url : `https:${url.replace(/^https/, '')}`;
-	const response = await cloudscraper.get(fixedUrl, {
-		headers: { referer: 'https://www.japscan.lol/' }
-	});
+
+	let headers = await bypassOptions(fixedUrl);
+	if (!headers) throw 'bypass failed';
+
+	let response = await fetch(fixedUrl, { headers });
+	if (!response.ok) {
+		headers = await bypassOptions(fixedUrl, true);
+		if (!headers) throw 'bypass failed';
+
+		let response = await fetch(fixedUrl, { headers });
+		if (!response.ok) throw 'request failed';
+	}
 
 	locked = false;
 
-	// const userAgent = await browser.getUserAgent();
-	// const clearance = (await browser.getCookies()).find(e => e.name === 'cf_clearance');
-
-	// console.log(userAgent);
-
-	// const response = await fetch(`https://c2.japscan.lol/${url}`, {
-	// 	// const response = await fetchURL(url, {
-	// 	headers: {
-	// 		'user-agent': userAgent,
-	// 		referer: 'https://www.japscan.lol/',
-	// 		cookie: `cf_clearance=${clearance.value}`
-	// 	}
-	// });
-
-	if (!response) return null;
-
-	return response.rawBody;
+	return response.body;
 });

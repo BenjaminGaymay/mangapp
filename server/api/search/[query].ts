@@ -1,10 +1,9 @@
-import cloudscraper from 'cloudflare-scraper';
-
 async function searchManga(query: string): Promise<QueryResult[]> {
 	const params: URLSearchParams = new URLSearchParams();
 	params.append('search', query);
 
-	const response = await cloudscraper.post('https://www.japscan.lol/live-search/', {
+	const response = await fetch('https://www.japscan.lol/live-search/', {
+		method: 'POST',
 		body: params.toString(),
 		headers: {
 			'X-Requested-With': 'XMLHttpRequest',
@@ -12,7 +11,9 @@ async function searchManga(query: string): Promise<QueryResult[]> {
 		}
 	});
 
-	const data: QueryResult[] = JSON.parse(response.body);
+	if (!response.ok) return [];
+
+	const data: QueryResult[] = await response.json();
 
 	return data.map(({ name, url }) => ({ name, url, slug: url.split('/')[2] }));
 }

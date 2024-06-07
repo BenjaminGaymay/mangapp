@@ -1,22 +1,12 @@
 import cloudscraper from 'cloudflare-scraper';
 
-// import { homeChapterNumber } from '~~/server/utils/regex/home';
-// import { rManga, mangaChapters, mangaDate, mangaHref, mangaInfos, mangaName } from '~~/server/utils/regex/manga';
-// import { clearString } from '~~/server/utils/string';
-
 async function fetchMangaPage(slug: string): Promise<string> {
-	// const abortController = new AbortController();
-	// const timeout = setTimeout(() => abortController.abort(), 25000);
+	const response = await fetch(`https://www.japscan.lol/manga/${slug}/`);
+	if (!response.ok) return null;
 
-	const response = await cloudscraper.get(`https://www.japscan.lol/manga/${slug}/`, {
-		// signal: abortController.signal
-	});
-
-	// clearTimeout(timeout);
-	return clearString(response.body);
+	const text = await response.text();
+	return clearString(text);
 }
-
-// type Keys = 'title' | 'img' | 'date' | 'status' | 'type' | 'genre' | 'author' | 'volume' | 'isAnime' | 'synopsis';
 
 async function getMangaData(slug: string): Promise<Manga> {
 	const page: string = await fetchMangaPage(slug);
