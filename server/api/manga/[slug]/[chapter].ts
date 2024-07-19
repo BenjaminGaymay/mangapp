@@ -8,6 +8,8 @@ export async function fetchFirstPage(slug: string, chapter: string): Promise<str
 		if (!headers) throw 'bypass failed';
 
 		let response = await fetch(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`, { headers });
+		console.log(await response.text());
+
 		if (!response.ok) throw 'request failed';
 	}
 

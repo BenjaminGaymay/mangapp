@@ -15,19 +15,25 @@ export default defineEventHandler(async (event): Promise<any> => {
 	locked = true;
 	const fixedUrl = url.startsWith('https:') ? url : `https:${url.replace(/^https/, '')}`;
 
-	let headers = await bypassOptions(fixedUrl);
-	if (!headers) throw 'bypass failed';
-
-	let response = await fetch(fixedUrl, { headers });
-	if (!response.ok) {
-		headers = await bypassOptions(fixedUrl, true);
-		if (!headers) throw 'bypass failed';
+	try {
+		let headers = await bypassOptions(fixedUrl);
+		if (!headers) throw 'bypass failed 1';
 
 		let response = await fetch(fixedUrl, { headers });
-		if (!response.ok) throw 'request failed';
+		if (!response.ok) {
+			headers = await bypassOptions(fixedUrl, true);
+			if (!headers) throw 'bypass failed 2';
+
+			let response = await fetch(fixedUrl, { headers });
+			if (!response.ok) throw 'request failed 3';
+		}
+
+		locked = false;
+		return response.body;
+	} catch (e: any) {
+		console.error('bypass image:', e);
 	}
 
 	locked = false;
-
-	return response.body;
+	return null;
 });

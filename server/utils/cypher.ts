@@ -5,9 +5,16 @@ let first_key = null as string | null;
 let second_key = null as string | null;
 
 let fetchReferenceError = false;
+let errors = 0;
 
 export async function decodeCypher(cypher: string, retry = true) {
 	try {
+		//? on garde ?
+		if (errors > 5) {
+			await findCypher();
+			errors = 0;
+		}
+
 		if (!first_key || !second_key) await findCypher();
 		if (!first_key || !second_key) return { imagesLink: [] as string[] };
 
@@ -22,6 +29,7 @@ export async function decodeCypher(cypher: string, retry = true) {
 		return { imagesLink: JSON.parse(pages[0]) as string[] };
 	} catch (e: any) {
 		console.error('error: decode:', e);
+		errors += 1;
 
 		if (retry && e.message?.includes('JSON')) {
 			first_key = null;

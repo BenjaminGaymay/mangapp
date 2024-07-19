@@ -1,4 +1,4 @@
-FROM node:20-alpine3.18 as version
+FROM node:20-alpine3.18 AS version
 
 WORKDIR /mangas
 
@@ -11,14 +11,14 @@ RUN node -e "['./package.json','./package-lock.json'].forEach(n => {  \
   });"
 
 
-FROM node:20-alpine3.18 as build
+FROM node:20-alpine3.18 AS build
 
 WORKDIR /mangas
 
-RUN apk add xvfb chromium
+# RUN apk add xvfb chromium
 
-ENV NODE_CHROMIUM_SKIP_INSTALL=true
-ENV CHROME_EXECUTABLE_PATH=/usr/bin/chromium-browser
+# ENV NODE_CHROMIUM_SKIP_INSTALL=true
+# ENV CHROME_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 COPY --chown=node:node --from=version /mangas/package.json /mangas/package-lock.json ./
 RUN npm i --legacy-peer-deps

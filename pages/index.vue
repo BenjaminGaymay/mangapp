@@ -52,6 +52,7 @@ const { data: tData } = useLazyFetch<HomeManga[]>(`/api/home/day/${day}`);
 const todayHots = ref((tData && tData.value ? tData.value.filter(m => m.isHot) : []) as HomeManga[]);
 
 watch(tData, (value: HomeManga[]) => {
+	console.log(value);
 	todayHots.value = value.filter(m => m.isHot);
 });
 

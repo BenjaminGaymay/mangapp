@@ -16,17 +16,25 @@ export async function bypassOptions(url: string, force = false) {
 	try {
 		locked = true;
 
-		// const response = await fetch('http://localhost:3000/cf-clearance-scraper', {
-		const response = await fetch('http://cloudflare:3000/cf-clearance-scraper', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ url, mode: 'waf' })
-		});
+		const params = new URLSearchParams();
+		params.append('url', url);
+
+		const response = await fetch('http://localhost:8000/');
+		// const response = await fetch('http://cloudflare:8000/');
 
 		locked = false;
 
 		const json = await response.json();
-		HEADERS = json.headers;
+
+		HEADERS = {
+			Accept: '*/*',
+			'Accept-Encoding': 'gzip, deflate, br, zstd',
+			'Accept-Language': 'en-US,en;q=0.9',
+			Origin: 'https://www.japscan.lol',
+			Referer: 'https://www.japscan.lol/',
+			Cookie: json.cookies.map(({ name, value }) => `${name}=${value}`).join(';'),
+			'User-Agent': json.agent
+		};
 
 		return HEADERS;
 	} catch (e: any) {
@@ -35,3 +43,32 @@ export async function bypassOptions(url: string, force = false) {
 		throw 'unable to solve cloudflare challenge';
 	}
 }
+
+// export async function fetchWithBypass(url: string) {
+// 	let tries = 0;
+// 	while (locked) {
+// 		await new Promise(resolve => setTimeout(resolve, 1000));
+
+// 		tries += 1;
+
+// 		if (tries > 10) return null;
+// 	}
+
+// 	try {
+// 		locked = true;
+
+// 		const params = new URLSearchParams();
+// 		params.append('url', url);
+
+// 		const response = await fetch(`http://localhost:3000?${params.toString()}`);
+
+// 		locked = false;
+// 		console.log(await response.text());
+
+// 		return response;
+// 	} catch (e: any) {
+// 		locked = false;
+
+// 		throw 'unable to solve cloudflare challenge';
+// 	}
+// }

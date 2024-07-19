@@ -63,6 +63,7 @@ async function fetchHomePage(): Promise<string> {
 	if (!response.ok) throw 'request failed';
 
 	const text = await response.text();
+
 	return clearString(text);
 }
 
@@ -83,20 +84,22 @@ function findDailyManga(day: string): RegExpMatchArray[] {
 }
 
 function parseDailyManga(mangaList: RegExpMatchArray[]): HomeManga[] {
-	return mangaList.map(manga => {
+	return mangaList.map((manga, i) => {
 		const [regexed] = manga;
 
 		return {
 			slug: regexed.match(/<a href="\/manga\/(.+?)\/?"/)?.at(1) || '',
 			name: regexed.match(/title="(.+?)"/)?.at(1) || '',
 			isHot: regexed.includes('Top') || undefined,
-			chapters: parseMangaChapters(regexed.split('<div class="col-md-5">')[2])
+			chapters: parseMangaChapters(regexed.split(/<div class="col-md-5( donate)?">/).at(-1))
 		};
 	});
 }
 
 function parseMangaChapters(manga: string): Chapter[] {
 	return [...manga.matchAll(homeChapters)].map(([, href, cName, , , infos]) => {
+		console.log(href, cName, infos);
+
 		const [, number]: string[] = href.match(homeChapterNumber) || [];
 		const isVolume: boolean = number.includes('volume');
 
