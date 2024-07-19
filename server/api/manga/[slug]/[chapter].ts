@@ -23,7 +23,10 @@ const exclude = [
 	'https://www.japscan.lol/imgs/japs/02_1200x2000_banner_fr.jpg',
 	'https://www.japscan.lol/imgs/japs/03_1200x2000_banner_fr.jpg',
 	'https://www.japscan.lol/imgs/japo/reader.jpg',
-	'https://www.japscan.lol/imgs/japo/reader_1.jpg'
+	'https://www.japscan.lol/imgs/japo/reader_1.jpg',
+	'https://c4.japscan.lol/61a6425672b6d5a67033b2232546c66306d677e3b77311137276a8239993735375d63466257612f3b666b5660/2f674e628d30273d4a650830063f6b652366393f1e693f39666d4632466b0d3120639a37d33b53622b7d507d4/a7f146ae76d766e9966367dfd3a76660b77ae63eb2d1f360d32fd2b1d3af328e84a1844384738560a541547ab/4dfa2.jpg',
+	'https://www.japscan.lol/imgs/ona/read_1.jpg',
+	'https://www.japscan.lol/imgs/ona/read_2.jpg'
 ];
 
 async function getChapterPages(slug: string, chapter: string): Promise<ChapterPages> {
