@@ -8,6 +8,7 @@ let fetchReferenceError = false;
 let errors = 0;
 
 export async function decodeCypher(cypher: string, retry = true) {
+	console.log('decodeCypher: start');
 	try {
 		//? on garde ?
 		if (errors > 5) {
@@ -25,6 +26,8 @@ export async function decodeCypher(cypher: string, retry = true) {
 
 		const pages = ascii.match(/\[.+\]/);
 		if (!pages || !pages?.at(0)) return { imagesLink: [] as string[] };
+
+		console.log('decodeCypher: ok');
 
 		return { imagesLink: JSON.parse(pages[0]) as string[] };
 	} catch (e: any) {
@@ -58,6 +61,8 @@ async function getReferencesPage() {
 async function findCypher() {
 	if (fetchReferenceError) return;
 
+	console.log('findCypher: start');
+
 	try {
 		const cyphers = await getReferencesPage();
 		if (!cyphers) throw new Error('No cypher found');
@@ -83,17 +88,24 @@ async function findCypher() {
 			second += slice2[i];
 		}
 
+		console.log('find missing');
 		const missing_first = findMissing(first);
 		second_key = second + findMissing(second);
 
-		const combinations = permutations(missing_first).filter(
-			order =>
-				isValid(cyphers['100-000-levels'], '100-000-levels', first + order, second_key!) &&
-				isValid(cyphers['one-piece'], 'one-piece', first + order, second_key!)
-		);
+		console.log('permutations');
+		const combination = findFirstValidPermutations(missing_first, cyphers, first, second, second_key);
 
-		if (combinations.length > 0) {
-			first_key = first + combinations[0];
+		// .filter(order => {
+		// 	if (!isValid(cyphers['100-000-levels'], '100-000-levels', first + order, second_key!)) return false;
+		// 	if (!isValid(cyphers['one-piece'], 'one-piece', first + order, second_key!)) return false;
+
+		// 	return true;
+		// });
+
+		console.log('permutations: ok');
+
+		if (combinations) {
+			first_key = first + combinations;
 			return;
 		}
 
@@ -105,6 +117,13 @@ async function findCypher() {
 	}
 }
 
+function checkIfPermutationIsValid(cyphers: object, permutation: string) {
+	if (!isValid(cyphers['100-000-levels'], '100-000-levels', permutation, second_key!)) return false;
+	if (!isValid(cyphers['one-piece'], 'one-piece', permutation, second_key!)) return false;
+
+	return true;
+}
+
 function findMissing(str: string) {
 	let missing = '';
 	for (let i = 0; i < b64.length; i++) {
@@ -114,7 +133,7 @@ function findMissing(str: string) {
 	return missing;
 }
 
-function permutations(array: string) {
+function findFirstValidPermutations(array: string, cyphers: object, first: string, second: string, second_key: string) {
 	const n = array.length;
 	let r = n;
 
@@ -124,11 +143,13 @@ function permutations(array: string) {
 	const cycles = [];
 	for (let i = n; i > n - r; i--) cycles.push(i);
 
-	const results = [];
-	let res = [];
+	// const results = [];
+	const res = [];
 	for (let k = 0; k < r; k++) res.push(array[indices[k]]);
 
-	results.push(res);
+	if (checkIfPermutationIsValid(cyphers, first + res.join(''), second_key)) return res.join('');
+
+	// results.push(res.join(''));
 
 	let broken = false;
 	while (n > 0) {
@@ -149,7 +170,9 @@ function permutations(array: string) {
 				let res = [];
 				for (let k = 0; k < r; k++) res.push(array[indices[k]]);
 
-				results.push(res);
+				// results.push(res.join(''));
+				if (checkIfPermutationIsValid(cyphers, first + res.join(''), second_key)) return res.join('');
+
 				broken = true;
 				break;
 			}
@@ -158,5 +181,5 @@ function permutations(array: string) {
 		if (broken === false) break;
 	}
 
-	return results.map(e => e.join(''));
+	return null;
 }

@@ -98,8 +98,6 @@ function parseDailyManga(mangaList: RegExpMatchArray[]): HomeManga[] {
 
 function parseMangaChapters(manga: string): Chapter[] {
 	return [...manga.matchAll(homeChapters)].map(([, href, cName, , , infos]) => {
-		console.log(href, cName, infos);
-
 		const [, number]: string[] = href.match(homeChapterNumber) || [];
 		const isVolume: boolean = number.includes('volume');
 

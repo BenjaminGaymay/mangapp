@@ -1,6 +1,9 @@
 export async function fetchFirstPage(slug: string, chapter: string): Promise<string> {
+	console.time('bypass');
 	let headers = await bypassOptions(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`);
 	if (!headers) throw 'bypass failed';
+
+	console.timeEnd('bypass');
 
 	let response = await fetch(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`, { headers });
 	if (!response.ok) {
@@ -8,8 +11,6 @@ export async function fetchFirstPage(slug: string, chapter: string): Promise<str
 		if (!headers) throw 'bypass failed';
 
 		let response = await fetch(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`, { headers });
-		console.log(await response.text());
-
 		if (!response.ok) throw 'request failed';
 	}
 
@@ -50,6 +51,8 @@ async function getChapterPages(slug: string, chapter: string): Promise<ChapterPa
 		next: next?.replace('/lecture-en-ligne/', '/manga/')?.replace(/\/$/, ''),
 		previous: previous?.replace('/lecture-en-ligne/', '/manga/')?.replace(/\/$/, '')
 	};
+
+	console.log('getChapterPages: ok');
 
 	return { ...infos, pages: pages.filter(e => !exclude.includes(e)) };
 }

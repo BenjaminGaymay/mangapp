@@ -19,8 +19,8 @@ export async function bypassOptions(url: string, force = false) {
 		const params = new URLSearchParams();
 		params.append('url', url);
 
-		// const response = await fetch('http://localhost:8000/');
-		const response = await fetch('http://cloudflare:8000/');
+		const response = await fetch('http://localhost:8000/');
+		// const response = await fetch('http://cloudflare:8000/');
 
 		locked = false;
 
