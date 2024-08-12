@@ -1,9 +1,8 @@
-export async function fetchFirstPage(slug: string, chapter: string): Promise<string> {
-	console.time('bypass');
+import { parse } from 'node-html-parser';
+
+export async function fetchFirstPage(slug: string, chapter: string) {
 	let headers = await bypassOptions(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`);
 	if (!headers) throw 'bypass failed';
-
-	console.timeEnd('bypass');
 
 	let response = await fetch(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`, { headers });
 	if (!response.ok) {
@@ -15,7 +14,7 @@ export async function fetchFirstPage(slug: string, chapter: string): Promise<str
 	}
 
 	const text = await response.text();
-	return clearString(text);
+	return parse(clearString(text));
 }
 
 const exclude = [
@@ -31,17 +30,17 @@ const exclude = [
 ];
 
 async function getChapterPages(slug: string, chapter: string): Promise<ChapterPages> {
-	const page: string = await fetchFirstPage(slug, chapter);
+	const page = await fetchFirstPage(slug, chapter);
 
-	const [, cypher] = page.match(/<i.+?data-atad="(.+?)"/) || [null, ''];
+	const cypher = page.querySelector('i[data-atad]')?.getAttribute('data-atad') || '';
 	const { imagesLink: pages } = await decodeCypher(cypher);
 
-	const [, name]: string[] = page.match(chapterName) || [];
+	const [, name]: string[] = page.innerText.match(chapterName) || [];
 
-	const [, manga]: string[] = page.match(chapterManga(slug)) || [];
+	const [, manga]: string[] = page.innerText.match(chapterManga(slug)) || [];
 
-	const [, next]: string[] = page.match(chapterNext) || [];
-	const [, previous]: string[] = page.match(chapterPrevious) || [];
+	const [, next]: string[] = page.innerText.match(chapterNext) || [];
+	const [, previous]: string[] = page.innerText.match(chapterPrevious) || [];
 
 	const infos = {
 		name: name?.split('Attention :')[0],
@@ -51,8 +50,6 @@ async function getChapterPages(slug: string, chapter: string): Promise<ChapterPa
 		next: next?.replace('/lecture-en-ligne/', '/manga/')?.replace(/\/$/, ''),
 		previous: previous?.replace('/lecture-en-ligne/', '/manga/')?.replace(/\/$/, '')
 	};
-
-	console.log('getChapterPages: ok');
 
 	return { ...infos, pages: pages.filter(e => !exclude.includes(e)) };
 }

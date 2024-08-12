@@ -1,3 +1,5 @@
+// https://github.com/sarperavci/CloudflareBypassForScraping
+
 let locked = false;
 let HEADERS = null;
 
@@ -24,6 +26,7 @@ export async function bypassOptions(url: string, force = false) {
 
 		locked = false;
 
+		if (!response.ok) throw 'unable to solve cloudflare challenge';
 		const json = await response.json();
 
 		HEADERS = {

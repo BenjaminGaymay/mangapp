@@ -1,12 +1,16 @@
+import { parse, type HTMLElement } from 'node-html-parser';
+
 let MangaCache: HomeManga[][] | null = null;
 let TrendsCache: Trends[] | null = null;
 
-export async function getDailyChapters(index: number): Promise<HomeManga[]> {
+export async function getDailyChapters(index: number) {
 	if (MangaCache && MangaCache[index]) return MangaCache[index];
 
 	const page: string = await fetchHomePage();
-	const manga: HomeManga[][] = parseHomePage(page);
-	const trends: Trends[] = parseTrends(page);
+	const parsed = parse(page);
+
+	const manga: HomeManga[][] = parseHomePage(parsed);
+	const trends: Trends[] = parseTrends(parsed);
 
 	updateMangaCache(manga);
 	updateTrendsCache(trends);
@@ -14,11 +18,13 @@ export async function getDailyChapters(index: number): Promise<HomeManga[]> {
 	return manga[index];
 }
 
-export async function getWeeklyChapters(): Promise<HomeManga[]> {
+export async function getWeeklyChapters() {
 	if (MangaCache === null) {
 		const page: string = await fetchHomePage();
-		const manga: HomeManga[][] = parseHomePage(page);
-		const trends: Trends[] = parseTrends(page);
+		const parsed = parse(page);
+
+		const manga: HomeManga[][] = parseHomePage(parsed);
+		const trends: Trends[] = parseTrends(parsed);
 
 		updateMangaCache(manga);
 		updateTrendsCache(trends);
@@ -45,12 +51,15 @@ export async function getWeeklyChapters(): Promise<HomeManga[]> {
 	return wManga;
 }
 
-export async function getWeeklyTrends(): Promise<Trends[]> {
+export async function getWeeklyTrends() {
 	if (TrendsCache) return TrendsCache;
 
 	const page: string = await fetchHomePage();
-	const manga: HomeManga[][] = parseHomePage(page);
-	const trends: Trends[] = parseTrends(page);
+
+	const parsed = parse(page);
+
+	const manga: HomeManga[][] = parseHomePage(parsed);
+	const trends: Trends[] = parseTrends(parsed);
 
 	updateMangaCache(manga);
 	updateTrendsCache(trends);
@@ -58,7 +67,7 @@ export async function getWeeklyTrends(): Promise<Trends[]> {
 	return trends;
 }
 
-async function fetchHomePage(): Promise<string> {
+async function fetchHomePage() {
 	const response = await fetch('https://www.japscan.lol');
 	if (!response.ok) throw 'request failed';
 
@@ -67,55 +76,58 @@ async function fetchHomePage(): Promise<string> {
 	return clearString(text);
 }
 
-function parseHomePage(text: string): HomeManga[][] {
-	const regex: RegExp[] = text.includes('id="tab-1"') ? homeV1 : homeV2;
+function parseHomePage(page: HTMLElement): HomeManga[][] {
+	const tabs = Array.from(page.querySelectorAll('.tab-pane.container').values());
 
-	const days: HomeManga[][] = regex.map(r => {
-		const match = text.match(r);
-		if (match && match.length > 0) return parseDailyManga(findDailyManga(match[0]));
-		return [];
-	});
-
-	return days;
-}
-
-function findDailyManga(day: string): RegExpMatchArray[] {
-	return [...day.matchAll(homeManga)];
-}
-
-function parseDailyManga(mangaList: RegExpMatchArray[]): HomeManga[] {
-	return mangaList.map((manga, i) => {
-		const [regexed] = manga;
-
-		return {
-			slug: regexed.match(/<a href="\/manga\/(.+?)\/?"/)?.at(1) || '',
-			name: regexed.match(/title="(.+?)"/)?.at(1) || '',
-			isHot: regexed.includes('Top') || undefined,
-			chapters: parseMangaChapters(regexed.split(/<div class="col-md-5( donate)?">/).at(-1))
-		};
+	return tabs.map(tab => {
+		const mangaList = Array.from(tab.querySelectorAll(':scope > .row').values());
+		return mangaList.map(manga => parseSingleManga(manga));
 	});
 }
 
-function parseMangaChapters(manga: string): Chapter[] {
-	return [...manga.matchAll(homeChapters)].map(([, href, cName, , , infos]) => {
-		const [, number]: string[] = href.match(homeChapterNumber) || [];
-		const isVolume: boolean = number.includes('volume');
+function parseSingleManga(manga: HTMLElement): HomeManga {
+	const link = manga.querySelector('a');
+
+	const href = link?.getAttribute('href') || '';
+	const title = link?.getAttribute('title') || '';
+
+	const isHot = Boolean(manga.querySelector('img[alt="Top 10"], img[alt="Top 100"], img[alt="Top 500"]'));
+
+	return {
+		slug: href.split('/').at(-2) || '',
+		name: title,
+		isHot,
+		chapters: parseSingleMangaChapters(manga)
+	};
+}
+
+function parseSingleMangaChapters(manga: HTMLElement): Chapter[] {
+	const chapters = manga.querySelector('.chapter-list');
+	const links = Array.from(chapters?.querySelectorAll('a')?.values() || []);
+
+	return links.map(link => {
+		const href = link.getAttribute('href') || '';
+		const title = link.getAttribute('title') || '';
+		const number = href.split('/').at(-2) || '';
 
 		return {
 			href: href.replace('/lecture-en-ligne/', '/manga/'),
-			name: cName,
+			name: title,
 			number: parseFloat(number.replace('volume-', '')),
-			isVolume,
-			infos: undefined
+			isVolume: number.includes('volume'),
+			infos: link.querySelector('span.badge')?.innerText || undefined
 		};
 	});
 }
 
-function parseTrends(text: string): Trends[] {
-	const [_day, week, _year]: RegExpMatchArray[] = [...text.matchAll(homeTrendGroup)];
-	const trends: Trends[] = [...week[0].matchAll(homeTrend)].map(([, slug, name]) => ({ slug, name }));
+function parseTrends(page: HTMLElement): Trends[] {
+	const panel = page.querySelector('#top_mangas_week');
+	const trends = Array.from(panel?.querySelectorAll('li a[href^="/manga/"][title]') || []);
 
-	return trends;
+	return trends.map(trend => ({
+		slug: trend.getAttribute('href')?.split('/')?.at(-2) || '',
+		name: trend.getAttribute('title') || ''
+	}));
 }
 
 function updateMangaCache(update: HomeManga[][]) {

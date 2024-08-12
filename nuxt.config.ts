@@ -13,7 +13,6 @@ export default defineNuxtConfig({
 	},
 
 	modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@kevinmarrec/nuxt-pwa'],
-
 	css: ['@/assets/css/main.css'],
 
 	pwa: {
@@ -33,5 +32,7 @@ export default defineNuxtConfig({
 				allow: ['/home/b1j']
 			}
 		}
-	}
+	},
+
+	compatibilityDate: '2024-07-29'
 });
