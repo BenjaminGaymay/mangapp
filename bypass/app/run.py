@@ -1,60 +1,53 @@
+from app.bypass import CloudflareBypasser
+from DrissionPage import ChromiumPage, ChromiumOptions
+from fastapi import FastAPI
+from pydantic import BaseModel
+from typing import Dict
+
 from pyvirtualdisplay import Display
 
 
-from app.bypass import CloudflareBypasser
-from DrissionPage import ChromiumPage, ChromiumOptions
-import time
+# Pydantic model for the response
+class CookieResponse(BaseModel):
+    cookies: Dict[str, str]
+    agent: str
 
-from fastapi import FastAPI
 
-display = Display(visible=0, size=(800, 600))
-display.start()
+# Chromium Browser Path
+browser_path = "/usr/bin/chromium"
 
 app = FastAPI()
+display = Display(visible=False, size=(1920, 1080))
+display.start()
 
-@app.get("/")
+
+@app.get("/", response_model=CookieResponse)
 def root():
-	# Chromium Browser Path
-	browser_path = "/usr/bin/chromium"
+    # Start Xvfb for Docker
 
-	options = ChromiumOptions()
-	options.set_paths(browser_path=browser_path)
+    options = ChromiumOptions()
+    options.set_argument("--auto-open-devtools-for-tabs", "true")
+    options.set_argument("--remote-debugging-port=9222")
+    options.set_argument("--no-sandbox")  # Necessary for Docker
+    options.set_argument("--disable-gpu")  # Optional, helps in some cases
+    options.set_paths(browser_path=browser_path).headless(False)
 
-	# Some arguments to make the browser better for automation and less detectable.
-	arguments = [
-		"-no-first-run",
-		"-force-color-profile=srgb",
-		"-metrics-recording-only",
-		"-password-store=basic",
-		"-use-mock-keychain",
-		"-export-tagged-pdf",
-		"-no-default-browser-check",
-		"-disable-background-mode",
-		"-enable-features=NetworkService,NetworkServiceInProcess,LoadCryptoTokenExtension,PermuteTLSExtensions",
-		"-disable-features=FlashDeprecationWarning,EnablePasswordsAccountStorage",
-		"-deny-permission-prompts",
-		"-disable-gpu",
-		"-accept-lang=en-US",
-		'--no-sandbox'
-	]
+    driver = ChromiumPage(addr_or_opts=options)
 
-	for argument in arguments:
-		options.set_argument(argument)
+    try:
+        driver.get(
+            "https://www.japscan.lol/lecture-en-ligne/tales-of-demons-and-gods/475/"
+        )
+        cf_bypasser = CloudflareBypasser(driver, 5, True)
+        cf_bypasser.bypass()
+        cookies = driver.cookies(as_dict=True)
+        agent = driver.user_agent
 
-	driver = ChromiumPage(addr_or_opts=options)
-
-	driver.get('https://www.japscan.lol/lecture-en-ligne/tales-of-demons-and-gods/475/')
-
-	cf_bypasser = CloudflareBypasser(driver)
-	cf_bypasser.bypass()
-
-	cookies = driver.cookies()
-	agent = driver.user_agent
-
-	driver.quit()
-
-	return {"cookies": cookies, "agent": agent}
+        return {"cookies": cookies, "agent": agent}
+    except Exception as e:
+        raise e
+    finally:
+        driver.quit()
 
 
 display.stop()
-

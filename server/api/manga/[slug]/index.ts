@@ -1,8 +1,8 @@
 import { parse } from 'node-html-parser';
+import { fetchWithBypass } from '~/server/utils/scraper';
 
 async function fetchMangaPage(slug: string): Promise<string | null> {
-	const response = await fetch(`https://www.japscan.lol/manga/${slug}/`);
-	if (!response.ok) return null;
+	const response = await fetchWithBypass(`https://www.japscan.lol/manga/${slug}/`);
 
 	const text = await response.text();
 	return clearString(text);

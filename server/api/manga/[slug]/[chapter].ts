@@ -1,17 +1,8 @@
 import { parse } from 'node-html-parser';
+import { fetchWithBypass } from '~/server/utils/scraper';
 
 export async function fetchFirstPage(slug: string, chapter: string) {
-	let headers = await bypassOptions(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`);
-	if (!headers) throw 'bypass failed';
-
-	let response = await fetch(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`, { headers });
-	if (!response.ok) {
-		headers = await bypassOptions(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`, true);
-		if (!headers) throw 'bypass failed';
-
-		let response = await fetch(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`, { headers });
-		if (!response.ok) throw 'request failed';
-	}
+	const response = await fetchWithBypass(`https://www.japscan.lol/lecture-en-ligne/${slug}/${chapter}/`);
 
 	const text = await response.text();
 	return parse(clearString(text));

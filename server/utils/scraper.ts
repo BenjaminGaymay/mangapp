@@ -3,7 +3,23 @@
 let locked = false;
 let HEADERS = null;
 
-export async function bypassOptions(url: string, force = false) {
+export async function fetchWithBypass(url: string) {
+	let headers = await bypassOptions(url);
+	if (!headers) throw 'bypass failed 1';
+
+	let response = await fetch(url, { headers });
+	if (!response.ok) {
+		headers = await bypassOptions(url, true);
+		if (!headers) throw 'bypass failed 2';
+
+		let response = await fetch(url, { headers });
+		if (!response.ok) throw 'request failed';
+	}
+
+	return response;
+}
+
+async function bypassOptions(url: string, force = false) {
 	let tries = 0;
 	while (locked) {
 		await new Promise(resolve => setTimeout(resolve, 1000));
@@ -21,8 +37,8 @@ export async function bypassOptions(url: string, force = false) {
 		const params = new URLSearchParams();
 		params.append('url', url);
 
-		const response = await fetch('http://localhost:8000/');
-		// const response = await fetch('http://cloudflare:8000/');
+		// const response = await fetch('http://localhost:8000/');
+		const response = await fetch('http://cloudflare:8000/');
 
 		locked = false;
 
@@ -31,16 +47,19 @@ export async function bypassOptions(url: string, force = false) {
 
 		HEADERS = {
 			Accept: '*/*',
-			'Accept-Encoding': 'gzip, deflate, br, zstd',
+			'Accept-Encoding': 'gzip, deflate, br',
 			'Accept-Language': 'en-US,en;q=0.9',
 			Origin: 'https://www.japscan.lol',
 			Referer: 'https://www.japscan.lol/',
-			Cookie: json.cookies.map(({ name, value }) => `${name}=${value}`).join(';'),
+			Cookie: Object.entries(json.cookies)
+				.map(([name, value]) => `${name}=${value}`)
+				.join(';'),
 			'User-Agent': json.agent
 		};
 
 		return HEADERS;
 	} catch (e: any) {
+		console.log(e);
 		locked = false;
 
 		throw 'unable to solve cloudflare challenge';
