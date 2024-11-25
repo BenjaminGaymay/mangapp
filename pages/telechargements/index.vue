@@ -40,12 +40,15 @@ const dl = useDownloads();
 const idb = useIdb();
 
 const sorted = computed(() => {
-	return dl.downloaded.reduce((acc, cur: DlChapter) => {
-		if (acc[cur.slug]) acc[cur.slug] = [...acc[cur.slug], cur].sort((a, b) => a.infos.number - b.infos.number);
-		else acc[cur.slug] = [cur];
+	return dl.downloaded.reduce(
+		(acc, cur: DlChapter) => {
+			if (acc[cur.slug]) acc[cur.slug] = [...acc[cur.slug], cur].sort((a, b) => a.infos.number - b.infos.number);
+			else acc[cur.slug] = [cur];
 
-		return acc;
-	}, {});
+			return acc;
+		},
+		{} as Record<string, DlChapter[]>
+	);
 });
 </script>
 
@@ -53,7 +56,9 @@ const sorted = computed(() => {
 .manga {
 	&-name {
 		background-color: rgba(27, 6, 77, 0.623);
-		box-shadow: inset -2px -2px 30px 10px rgba(0, 0, 0, 0.5), -2px -2px 30px 10px rgba(0, 0, 0, 0.5);
+		box-shadow:
+			inset -2px -2px 30px 10px rgba(0, 0, 0, 0.5),
+			-2px -2px 30px 10px rgba(0, 0, 0, 0.5);
 	}
 
 	&:not(:last-child) {

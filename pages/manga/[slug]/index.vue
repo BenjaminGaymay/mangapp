@@ -1,11 +1,11 @@
 <template>
 	<NuxtLayout name="mobile">
 		<Head>
-			<Title v-if="pending || !Boolean(manga)">Mangapp</Title>
+			<Title v-if="status === 'pending' || !Boolean(manga)">Mangapp</Title>
 			<Title v-else>{{ manga.title }} </Title>
 		</Head>
 
-		<Page :no-padding="true" :pending="pending || !Boolean(manga)">
+		<Page :no-padding="true" :pending="status === 'pending' || !Boolean(manga)">
 			<!-- <template v-if="!download"> -->
 			<div class="sticky top-0 z-20 mb-4 px-4 pb-2 pt-4 shadow-2xl" style="background-color: #090112">
 				<div class="flex flex-nowrap items-center justify-between px-4 py-2">
@@ -84,13 +84,15 @@ const history = useHistory();
 
 // dl.dlClear();
 const route = useRoute();
-const { data, pending } = useLazyFetch<Manga>(`/api/manga/${route.params.slug}`);
+const { data, status } = useLazyFetch<Manga>(`/api/manga/${route.params.slug}`);
 const manga = ref(data.value as Manga);
 
-watch(data, (value: Manga) => {
+watch(data, value => {
+	if (!value) return;
+
 	manga.value = value;
 
-	if (!value.title) throwError(new Error("Cette page n'existe pas"));
+	if (!value.title) throw new Error("Cette page n'existe pas");
 	scrollToLastRidden();
 });
 
@@ -113,12 +115,15 @@ onMounted(scrollToLastRidden);
 function findLastRiddenChapter() {
 	if (!manga || !manga.value || !manga.value.chapters) return null;
 
-	const ridden = manga.value.chapters.reduce((acc, cur) => {
-		const chapterFromHistory = history.get(`${route.params.slug}-${cur.number}`);
+	const ridden = manga.value.chapters.reduce(
+		(acc, cur) => {
+			const chapterFromHistory = history.get(`${route.params.slug}-${cur.number}`);
 
-		if (!chapterFromHistory || !chapterFromHistory.read) return acc;
-		return [...acc, cur];
-	}, []);
+			if (!chapterFromHistory || !chapterFromHistory.read) return acc;
+			return [...acc, cur];
+		},
+		[] as Manga['chapters']
+	);
 
 	return ridden.sort((a, b) => b.number - a.number)[0];
 }

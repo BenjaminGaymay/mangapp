@@ -4,7 +4,7 @@
 			<Title>Sorties de la semaine</Title>
 		</Head>
 
-		<Page :pending="pending">
+		<Page :pending="status === 'pending'">
 			<div class="flex items-center justify-between flex-nowrap mb-6">
 				<PageTitle>Sorties de la semaine</PageTitle>
 
@@ -25,10 +25,10 @@
 </template>
 
 <script setup lang="ts">
-const { data, pending } = useLazyFetch<HomeManga[]>(`/api/home/week`);
+const { data, status } = useLazyFetch<HomeManga[]>(`/api/home/week`);
 const weekHots = ref((data.value && data.value ? data.value.filter(m => m.isHot) : []) as HomeManga[]);
 
-watch(data, (value: HomeManga[]) => {
-	weekHots.value = value.filter(m => m.isHot);
+watch(data, value => {
+	weekHots.value = value?.filter(m => m.isHot) || [];
 });
 </script>

@@ -28,20 +28,20 @@
 </template>
 
 <script setup lang="ts">
-let timeout = null;
-const manga = ref([]);
+let timeout: NodeJS.Timeout | null = null;
+const manga = ref<QueryResult[] | null>([]);
 const loading = ref(false);
 
-function handleSearch(event, ms = 200) {
-	const query = event.target.value.replace(/^\s+|\s+$/g, '');
+function handleSearch(event: Event, ms = 200) {
+	const query = (event.target as HTMLInputElement)?.value?.replace(/^\s+|\s+$/g, '');
 
 	if (!query || query === '') return (manga.value = null);
 	if (timeout) clearTimeout(timeout);
 
 	timeout = setTimeout(async () => {
 		loading.value = true;
-		const { data } = await useFetch<QueryResult[]>(`/api/search/${query}`);
-		if (data) manga.value = data.value;
+		const data = await $fetch<QueryResult[]>(`/api/search/${query}`);
+		if (data) manga.value = data;
 
 		loading.value = false;
 	}, ms);
@@ -55,8 +55,5 @@ function handleSearch(event, ms = 200) {
 	&:focus {
 		outline: 0;
 	}
-}
-
-.loader {
 }
 </style>

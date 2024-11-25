@@ -1,21 +1,21 @@
 <template>
 	<NuxtLayout name="reading">
 		<Head>
-			<Title v-if="pending || !Boolean(chapter)">Mangapp</Title>
+			<Title v-if="status === 'pending' || !chapter">Mangapp</Title>
 			<Title v-else>
 				{{ chapter.manga }} ~ {{ chapter.isVolume ? 'Volume' : 'Chapitre' }} {{ chapter.number }}
 			</Title>
 		</Head>
 
 		<div
-			ref="screen"
+			ref="screenDiv"
 			@click="navigation = !navigation"
 			@scroll="handleScroll"
 			class="relative h-screen overflow-auto"
 		>
-			<UiLoader v-if="pending" />
+			<UiLoader v-if="status === 'pending'" />
 
-			<template v-else-if="!Boolean(chapter)">
+			<template v-else-if="!chapter">
 				<div class="error-img text-center">
 					<div>Erreur lors du chargement du chapitre</div>
 					<div>Veuillez contacter un administrateur</div>
@@ -119,6 +119,7 @@
 </template>
 
 <script setup lang="ts">
+import { useTemplateRef } from 'vue';
 import { useHistory } from '~~/store/history';
 import { useIdb } from '~~/store/idb';
 
@@ -126,10 +127,10 @@ const route = useRoute();
 const store = useHistory();
 const idb = useIdb();
 
-const { data, pending } = useLazyFetch<ChapterPages>(`/api/manga/${route.params.slug}/${route.params.chapter}`);
-const chapter = ref(data.value as ChapterPages);
+const { data, status } = useLazyFetch<ChapterPages>(`/api/manga/${route.params.slug}/${route.params.chapter}`);
+const chapter = ref<ChapterPages | null>(data.value);
 
-watch(data, (value: ChapterPages) => {
+watch(data, value => {
 	chapter.value = value;
 });
 
@@ -144,20 +145,21 @@ onMounted(scrollToSavedPage);
 const navigation = ref(true);
 const visible = ref(2);
 
-const screen = ref(null);
+const screen = useTemplateRef('screenDiv');
 const current = ref(1);
 
 const nextName = computed((): string => {
-	if (!chapter.value || !chapter.value.next) return null;
+	if (!chapter.value || !chapter.value.next) return '';
 
 	const type = chapter.value.next.includes('volume-') ? 'Volume' : 'Chapitre';
-	const name: string = chapter.value.next.split('/').pop().replace('volume-', '');
+	const name: string = chapter.value.next.split('/').pop()?.replace('volume-', '') || '-';
 	return `${type} ${name}`;
 });
 
 function handleScroll() {
 	navigation.value = false;
 	if (!chapter.value || !chapter.value.pages) return;
+	if (!screen.value) return;
 
 	const middle = document.elementFromPoint(window.innerWidth / 2, window.innerHeight / 2);
 	if (middle instanceof HTMLElement && middle.dataset.index && parseInt(middle.dataset.index) !== current.value) {

@@ -31,6 +31,14 @@ export default defineNuxtConfig({
 			fs: {
 				allow: ['/home/b1j']
 			}
+		},
+
+		css: {
+			preprocessorOptions: {
+				scss: {
+					api: 'modern-compiler'
+				}
+			}
 		}
 	},
 

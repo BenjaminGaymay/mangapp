@@ -3,7 +3,7 @@ import { entries, set } from 'idb-keyval';
 
 export const useHistory = defineStore('history-store', {
 	state: () => ({
-		list: {},
+		list: {} as Record<string, DBHistory>,
 		refreshing: false as boolean
 	}),
 
@@ -23,15 +23,18 @@ export const useHistory = defineStore('history-store', {
 			this.refreshing = true;
 			const dbEntries = cache || (await entries());
 
-			this.list = dbEntries.reduce((acc, [key, value]) => {
-				if (!key || !value) return acc;
+			this.list = dbEntries.reduce(
+				(acc, [key, value]) => {
+					if (!key || !value) return acc;
 
-				const [, slug]: string[] = key.split('[history]:');
-				if (!slug) return acc;
+					const [, slug]: string[] = key.split('[history]:');
+					if (!slug) return acc;
 
-				acc[key] = value;
-				return acc;
-			}, {});
+					acc[key] = value;
+					return acc;
+				},
+				{} as Record<string, DBHistory>
+			);
 
 			this.refreshing = false;
 		}

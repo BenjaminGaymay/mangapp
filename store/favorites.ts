@@ -10,13 +10,8 @@ export const useFavorites = defineStore('favorites-store', {
 	}),
 
 	actions: {
-		clear(): void {
-			if (this.loading) return;
-			this.favorites = [];
-		},
-
 		find(key: string): boolean {
-			return this.list.find(({ slug }) => slug === key);
+			return Boolean(this.list.find(({ slug }) => slug === key));
 		},
 
 		toggle(slug: string, title: string): void {
@@ -45,7 +40,7 @@ export const useFavorites = defineStore('favorites-store', {
 
 				const name: string = raw.replace(this.rClearName, '');
 				return [...acc, { slug, name }];
-			}, []);
+			}, [] as Favorite[]);
 
 			this.refreshing = false;
 		}

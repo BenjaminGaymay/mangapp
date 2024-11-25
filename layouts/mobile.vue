@@ -67,7 +67,7 @@ const selected = computed((): string => {
 	const path: string = route.path;
 	if (path === '/') return 'home';
 
-	const groups: string[] = Object.keys(pages);
+	const groups = Object.keys(pages) as (keyof typeof pages)[];
 	const filtered: string[] = groups.filter(group =>
 		pages[group].reduce((acc: boolean, cur: string): boolean => acc || cur === path || path.startsWith(cur), false)
 	);

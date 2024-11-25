@@ -6,7 +6,7 @@ export const useDownloads = defineStore('downloads-store', {
 		rmList: new Set() as Set<string>,
 		dlList: new Set() as Set<string>,
 		downloaded: [] as DlChapter[],
-		status: null as string,
+		status: null as string | null,
 		loading: false as boolean,
 		refreshing: false as boolean
 	}),
@@ -45,6 +45,8 @@ export const useDownloads = defineStore('downloads-store', {
 				const { slug, number } = JSON.parse(chapter) as DlChapterID;
 
 				const { data } = await useFetch<ChapterPages>(`/api/manga/${slug}/${number}`);
+				if (!data.value) return;
+
 				const { pages, ...infos } = data.value;
 
 				await Promise.all(pages.map(uri => this.dlPage(uri)));
@@ -77,6 +79,8 @@ export const useDownloads = defineStore('downloads-store', {
 					canvas.height = page.height;
 
 					const ctx = canvas.getContext('2d');
+					if (!ctx) return resolve();
+
 					ctx.drawImage(page, 0, 0);
 
 					const dataURI: DBPage = canvas.toDataURL('image/png');
@@ -91,7 +95,7 @@ export const useDownloads = defineStore('downloads-store', {
 			return promise;
 		},
 
-		get(key: string): DBChapter {
+		get(key: string): DBChapter | undefined {
 			return this.downloaded.find((e: DlChapter) => e.id === key);
 		},
 
@@ -109,15 +113,18 @@ export const useDownloads = defineStore('downloads-store', {
 
 				const slug: string = id.replace(new RegExp(`-${value.infos.number}$`), '');
 				return [...acc, { ...value, slug, id }];
-			}, []);
+			}, [] as DlChapter[]);
 
 			this.refreshing = false;
 		},
 
 		async remove(key: string): Promise<void> {
 			const id: string = `[chapter]:${key}`;
-			const { pages } = await get<DBChapter>(id);
 
+			const chapter = await get<DBChapter>(id);
+			if (!chapter) return;
+
+			const { pages } = chapter;
 			await delMany([...pages.map(uri => `[page]:${uri}`), id]);
 
 			this.downloaded = [...this.downloaded].filter(e => e.id !== key);

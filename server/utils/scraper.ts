@@ -1,7 +1,17 @@
 // https://github.com/sarperavci/CloudflareBypassForScraping
 
+type Headers = {
+	Accept: '*/*';
+	'Accept-Encoding': 'gzip, deflate, br';
+	'Accept-Language': 'en-US,en;q=0.9';
+	Origin: 'https://www.japscan.lol';
+	Referer: 'https://www.japscan.lol/';
+	Cookie: string;
+	'User-Agent': string;
+};
+
 let locked = false;
-let HEADERS = null;
+let HEADERS: Headers | null = null;
 
 export async function fetchWithBypass(url: string) {
 	let headers = await bypassOptions(url);
@@ -17,6 +27,16 @@ export async function fetchWithBypass(url: string) {
 	}
 
 	return response;
+}
+
+export async function getBypassHeaders(url: string) {
+	let headers = await bypassOptions(url);
+	if (headers) return headers;
+
+	headers = await bypassOptions(url, true);
+	if (headers) return headers;
+
+	return null;
 }
 
 async function bypassOptions(url: string, force = false) {
@@ -37,8 +57,8 @@ async function bypassOptions(url: string, force = false) {
 		const params = new URLSearchParams();
 		params.append('url', url);
 
-		// const response = await fetch('http://localhost:8000/');
-		const response = await fetch('http://cloudflare:8000/');
+		const response = await fetch('http://localhost:8000/');
+		// const response = await fetch('http://cloudflare:8000/');
 
 		locked = false;
 

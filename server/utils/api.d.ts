@@ -36,6 +36,7 @@ interface Manga extends MangaData {
 interface QueryResult {
 	name: string;
 	url: string;
+	slug: string;
 }
 
 interface Trends {

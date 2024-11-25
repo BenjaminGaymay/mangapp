@@ -1,8 +1,14 @@
+import { getBypassHeaders } from '~/server/utils/scraper';
+
 async function searchManga(query: string): Promise<QueryResult[]> {
+	const uri = 'https://www.japscan.lol/live-search/';
+
 	const params: URLSearchParams = new URLSearchParams();
 	params.append('search', query);
 
-	const response = await fetch('https://www.japscan.lol/live-search/', {
+	// const headers = (await getBypassHeaders(uri)) || {};
+
+	const response = await fetch(uri, {
 		method: 'POST',
 		body: params.toString(),
 		headers: {
