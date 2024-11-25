@@ -1,7 +1,6 @@
 import time
 from DrissionPage import ChromiumPage
 
-# https://github.com/sarperavci/CloudflareBypassForScraping
 # This code is written for readibility and simplicity. It is not optimized for performance or real-world usage.
 # You can optimize the code by removing the unnecessary sleeps and checks.
 

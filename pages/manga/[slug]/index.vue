@@ -1,57 +1,58 @@
 <template>
 	<NuxtLayout name="mobile">
 		<Head>
-			<Title v-if="status === 'pending' || !Boolean(manga)">Mangapp</Title>
+			<Title v-if="status === 'pending' || !manga">Mangapp</Title>
 			<Title v-else>{{ manga.title }} </Title>
 		</Head>
 
-		<Page :no-padding="true" :pending="status === 'pending' || !Boolean(manga)">
-			<!-- <template v-if="!download"> -->
-			<div class="sticky top-0 z-20 mb-4 px-4 pb-2 pt-4 shadow-2xl" style="background-color: #090112">
-				<div class="flex flex-nowrap items-center justify-between px-4 py-2">
-					<div class="w-4">
-						<NuxtLink to="/">
-							<img src="~/assets/svg/arrow/line.svg" />
-						</NuxtLink>
-					</div>
-
-					<div class="flex flex-nowrap items-center gap-x-3">
-						<div v-if="manga.title" class="w-5 cursor-pointer" @click="toggle(slug, manga.title)">
-							<img v-if="find(slug)" src="~/assets/svg/heart/plain.svg" />
-							<img v-else src="~/assets/svg/heart/line.svg" />
+		<Page :no-padding="true" :pending="status === 'pending' || !manga">
+			<template v-if="manga">
+				<!-- <template v-if="!download"> -->
+				<div class="sticky top-0 z-20 mb-4 px-4 pb-2 pt-4 shadow-2xl" style="background-color: #090112">
+					<div class="flex flex-nowrap items-center justify-between px-4 py-2">
+						<div class="w-4">
+							<NuxtLink to="/">
+								<img src="~/assets/svg/arrow/line.svg" />
+							</NuxtLink>
 						</div>
 
-						<!-- <div class="w-5 cursor-not-allowed" v-if="dl.loading">
+						<div class="flex flex-nowrap items-center gap-x-3">
+							<div v-if="manga.title" class="w-5 cursor-pointer" @click="toggle(slug, manga.title)">
+								<img v-if="find(slug)" src="~/assets/svg/heart/plain.svg" />
+								<img v-else src="~/assets/svg/heart/line.svg" />
+							</div>
+
+							<!-- <div class="w-5 cursor-not-allowed" v-if="dl.loading">
 								<img src="~/assets/svg/download/plain.svg" />
 							</div>
 							<div v-else class="w-5 cursor-pointer" @click="toggleDl">
 								<img v-if="download" src="~/assets/svg/download/plain.svg" />
 								<img v-else src="~/assets/svg/download/line.svg" />
 							</div> -->
-						<!-- <div>share</div> -->
+							<!-- <div>share</div> -->
+						</div>
 					</div>
+
+					<MangaTitle v-if="manga.title">
+						{{ manga.title }}
+					</MangaTitle>
 				</div>
 
-				<MangaTitle v-if="manga.title">
-					{{ manga.title }}
-				</MangaTitle>
-			</div>
+				<MangaInfos :infos="manga" :slug="slug" class="mx-4" />
+				<!-- </template> -->
 
-			<MangaInfos v-if="manga" :infos="manga" :slug="slug" class="mx-4" />
-			<!-- </template> -->
+				<div class="mx-2 mt-6 grid grid-cols-1 gap-y-1.5">
+					<!-- <template v-if="!download && manga.chapters"> -->
+					<template v-if="manga.chapters">
+						<MangaChapter
+							v-for="chapter in manga.chapters"
+							:chapter="chapter"
+							:slug="slug"
+							:data-index="chapter.number"
+						/>
+					</template>
 
-			<div class="mx-2 mt-6 grid grid-cols-1 gap-y-1.5">
-				<!-- <template v-if="!download && manga.chapters"> -->
-				<template v-if="manga.chapters">
-					<MangaChapter
-						v-for="chapter in manga.chapters"
-						:chapter="chapter"
-						:slug="slug"
-						:data-index="chapter.number"
-					/>
-				</template>
-
-				<!-- <template v-else-if="manga.chapters">
+					<!-- <template v-else-if="manga.chapters">
 					<MangaDownloadChapter
 						v-for="chapter in manga.chapters"
 						:chapter="chapter"
@@ -59,7 +60,8 @@
 						:data-index="chapter.number"
 					/>
 				</template> -->
-			</div>
+				</div>
+			</template>
 		</Page>
 
 		<!-- <template v-if="download" #nav>
@@ -85,7 +87,7 @@ const history = useHistory();
 // dl.dlClear();
 const route = useRoute();
 const { data, status } = useLazyFetch<Manga>(`/api/manga/${route.params.slug}`);
-const manga = ref(data.value as Manga);
+const manga = ref<Manga | null>(data.value ?? null);
 
 watch(data, value => {
 	if (!value) return;

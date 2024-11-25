@@ -6,8 +6,6 @@ async function searchManga(query: string): Promise<QueryResult[]> {
 	const params: URLSearchParams = new URLSearchParams();
 	params.append('search', query);
 
-	// const headers = (await getBypassHeaders(uri)) || {};
-
 	const response = await fetch(uri, {
 		method: 'POST',
 		body: params.toString(),

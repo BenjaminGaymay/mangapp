@@ -14,17 +14,11 @@ let locked = false;
 let HEADERS: Headers | null = null;
 
 export async function fetchWithBypass(url: string) {
-	let headers = await bypassOptions(url);
-	if (!headers) throw 'bypass failed 1';
+	const headers = await getBypassHeaders(url);
+	if (!headers) throw 'bypass failed';
 
-	let response = await fetch(url, { headers });
-	if (!response.ok) {
-		headers = await bypassOptions(url, true);
-		if (!headers) throw 'bypass failed 2';
-
-		let response = await fetch(url, { headers });
-		if (!response.ok) throw 'request failed';
-	}
+	const response = await fetch(url, { headers });
+	if (!response.ok) throw 'request failed';
 
 	return response;
 }
@@ -57,8 +51,8 @@ async function bypassOptions(url: string, force = false) {
 		const params = new URLSearchParams();
 		params.append('url', url);
 
-		const response = await fetch('http://localhost:8000/');
-		// const response = await fetch('http://cloudflare:8000/');
+		// const response = await fetch(`http://localhost:8000/cookies?${params.toString()}`);
+		const response = await fetch(`http://cloudflare:8000/cookies?${params.toString()}`);
 
 		locked = false;
 
@@ -74,7 +68,7 @@ async function bypassOptions(url: string, force = false) {
 			Cookie: Object.entries(json.cookies)
 				.map(([name, value]) => `${name}=${value}`)
 				.join(';'),
-			'User-Agent': json.agent
+			'User-Agent': json.user_agent
 		};
 
 		return HEADERS;
@@ -82,8 +76,10 @@ async function bypassOptions(url: string, force = false) {
 		console.log(e);
 		locked = false;
 
-		throw 'unable to solve cloudflare challenge';
+		// throw 'unable to solve cloudflare challenge';
 	}
+
+	return null;
 }
 
 // export async function fetchWithBypass(url: string) {
