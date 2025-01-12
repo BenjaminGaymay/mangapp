@@ -21,7 +21,7 @@ RUN apt-get install -y 	\
 	xvfb 				\
 	chromium
 
-#install python dependencies
+# Install python dependencies
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 
@@ -32,7 +32,6 @@ EXPOSE 8000
 
 # Set display port and dbus env to avoid hanging
 ENV DISPLAY=:99
-# ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
+ENV DBUS_SESSION_BUS_ADDRESS=/dev/null
 
-# ENTRYPOINT [ "./run.sh" ]
 CMD [ "/bin/bash", "run.sh" ]

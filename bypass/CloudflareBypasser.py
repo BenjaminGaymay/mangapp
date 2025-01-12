@@ -80,12 +80,14 @@ class CloudflareBypasser:
     def is_bypassed(self):
         try:
             title = self.driver.title.lower()
-            return "just a moment" not in title
+            print("title")
+            return "just a moment" not in title and "cloudflare" not in title
         except Exception as e:
             self.log_message(f"Error checking page title: {e}")
             return False
 
     def bypass(self):
+        print("try bypass")
         try_count = 0
 
         while not self.is_bypassed():

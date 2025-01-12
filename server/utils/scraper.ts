@@ -34,6 +34,9 @@ export async function getBypassHeaders(url: string) {
 }
 
 async function bypassOptions(url: string, force = false) {
+	console.log('call bypass', locked, force, HEADERS);
+	if (HEADERS && !force) return HEADERS;
+
 	let tries = 0;
 	while (locked) {
 		await new Promise(resolve => setTimeout(resolve, 1000));
@@ -42,8 +45,6 @@ async function bypassOptions(url: string, force = false) {
 
 		if (tries > 10) return null;
 	}
-
-	if (HEADERS && !force) return HEADERS;
 
 	try {
 		locked = true;
@@ -58,6 +59,8 @@ async function bypassOptions(url: string, force = false) {
 
 		if (!response.ok) throw 'unable to solve cloudflare challenge';
 		const json = await response.json();
+
+		console.log('bypassOptions', json);
 
 		HEADERS = {
 			Accept: '*/*',
@@ -76,37 +79,8 @@ async function bypassOptions(url: string, force = false) {
 		console.log(e);
 		locked = false;
 
-		// throw 'unable to solve cloudflare challenge';
+		throw 'unable to solve cloudflare challenge';
 	}
 
 	return null;
 }
-
-// export async function fetchWithBypass(url: string) {
-// 	let tries = 0;
-// 	while (locked) {
-// 		await new Promise(resolve => setTimeout(resolve, 1000));
-
-// 		tries += 1;
-
-// 		if (tries > 10) return null;
-// 	}
-
-// 	try {
-// 		locked = true;
-
-// 		const params = new URLSearchParams();
-// 		params.append('url', url);
-
-// 		const response = await fetch(`http://localhost:3000?${params.toString()}`);
-
-// 		locked = false;
-// 		console.log(await response.text());
-
-// 		return response;
-// 	} catch (e: any) {
-// 		locked = false;
-
-// 		throw 'unable to solve cloudflare challenge';
-// 	}
-// }
